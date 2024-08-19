@@ -1,9 +1,9 @@
-import { Typography, Grid } from "@mui/material";
+import { Typography, Grid } from "@mui/material"
 
-import MainCard from "components/MainCard";
-import MUIImageCard from "components/common/MuiImageCard";
+import MainCard from "components/MainCard"
+import MUIImageCard from "components/common/MuiImageCard"
 
-const CompanyContent = () => {
+const ServicesContent = () => {
 
     const handleDelete = () => {
         console.log("Delete button clicked");
@@ -11,13 +11,13 @@ const CompanyContent = () => {
 
     return (
         <MainCard
-            Title="Current Company Section"
+            Title="Current Services Section"
         >
             <Typography
                 variant='h4'
                 gutterBottom
             >
-                Current Companies
+                Current Services
             </Typography>
 
             <Grid
@@ -39,4 +39,4 @@ const CompanyContent = () => {
     )
 }
 
-export default CompanyContent
+export default ServicesContent

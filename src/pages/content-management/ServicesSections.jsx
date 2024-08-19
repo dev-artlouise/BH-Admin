@@ -1,6 +1,7 @@
 import { Grid } from "@mui/material"
 
 import ServicesForm from "layout/Services-Section/ServicesForm"
+import ServicesContent from "layout/Services-Section/ServicesContent"
 
 const ServicesSections = () => {
     return (
@@ -13,7 +14,7 @@ const ServicesSections = () => {
             </Grid>
 
             <Grid item xs={12} md={7}>
-                Company Content
+                <ServicesContent />
             </Grid>
         </Grid>
     )
