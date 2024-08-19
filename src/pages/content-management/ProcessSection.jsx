@@ -1,6 +1,7 @@
 import { Grid } from "@mui/material"
 
 import ProcessForm from 'layout/Process-Section/ProcessForm'
+import ProcessContent from "layout/Process-Section/ProcessContent"
 
 const ProcessSection = () => {
     return (
@@ -13,7 +14,7 @@ const ProcessSection = () => {
             </Grid>
 
             <Grid item xs={12} md={7}>
-                Company Content
+                <ProcessContent />
             </Grid>
         </Grid>
     )

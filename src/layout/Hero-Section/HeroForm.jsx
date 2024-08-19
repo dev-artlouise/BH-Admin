@@ -9,7 +9,7 @@ import MUITextField from 'components/common/MUITextField'
 
 const validationSchema = Yup.object({
     title: Yup.string().required('Title is required'),
-    content: Yup.string().required('Content is require d'),
+    content: Yup.string().required('Content is required'),
 });
 
 const styles = {

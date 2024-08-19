@@ -1,8 +1,33 @@
+import { useState, useRef } from 'react';
+
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
+
 import { Grid, Stack, InputLabel, OutlinedInput, Button } from '@mui/material'
 
+import MUITextField from 'components/common/MUITextField';
+
+const validationSchema = Yup.object({
+    processTitle: Yup.string().required('Title is required'),
+});
+
 const ProcessForm = () => {
+
+    const formik = useFormik({
+        initialValues: {
+            processTitle: '',
+            processContent: '',
+        },
+
+        validationSchema: validationSchema,
+
+        onSubmit: (values) => {
+            console.log(values)
+        }
+    })
+
     return (
-        <form>
+        <form onSubmit={formik.handleSubmit}>
             <Grid
                 container
                 spacing={3}
@@ -13,36 +38,36 @@ const ProcessForm = () => {
                     xs={12}
                 >
                     <Stack spacing={1}>
-                        <InputLabel htmlFor="companyName">Title</InputLabel>
-                        <OutlinedInput
-                            id="companyName"
-                            // type="firstname"
-                            // value={values.firstname}
-                            // name="firstname"
-                            // onBlur={handleBlur}
-                            // onChange={handleChange}
-                            placeholder="Enter process title"
+
+                        <MUITextField
+                            label='Process Title'
+                            name='processTitle'
+                            placeholder='Enter Title'
+                            value={formik.values.processTitle}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
                             fullWidth
-                        // error={Boolean(touched.firstname && errors.firstname)}
+                            error={formik.touched.processTitle && Boolean(formik.errors.processTitle)}
+                            helperText={formik.touched.processTitle && formik.errors.processTitle}
                         />
                     </Stack>
                 </Grid>
 
                 <Grid item xs={12}>
                     <Stack spacing={1}>
-                        <InputLabel htmlFor="content">Content</InputLabel>
-                        <OutlinedInput
-                            id="content"
-                            // type="firstname"
-                            // value={values.firstname}
-                            // name="firstname"
-                            // onBlur={handleBlur}
-                            // onChange={handleChange}
-                            placeholder="Enter process content"
+
+                        <MUITextField
+                            label='Content'
+                            name='processContent'
+                            placeholder='Enter Content'
+                            value={formik.values.processContent}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
                             fullWidth
                             multiline
                             rows={4}
-                        // error={Boolean(touched.firstname && errors.firstname)}
+                            error={formik.touched.processContent && Boolean(formik.errors.processContent)}
+                            helperText={formik.touched.processContent && formik.errors.processContent}
                         />
                     </Stack>
                 </Grid>
