@@ -8,57 +8,25 @@ import { Grid, Stack, Button, Snackbar, Alert } from '@mui/material'
 import MUITextField from 'components/common/MUITextField'
 
 const validationSchema = Yup.object({
-    title: Yup.string().required('Title is required'),
-    content: Yup.string().required('Content is required'),
+    vision: Yup.string(),
+    mission: Yup.string(),
 });
 
-const styles = {
-    inputWrapper: {
-        position: 'relative',
-        display: 'flex',
-        alignItems: 'center',
-        border: '1px solid #ced4da',
-        borderRadius: '4px',
-        padding: '12px',
-        backgroundColor: '#fff',
-    },
-    fileInput: {
-        position: 'absolute',
-        width: '100%',
-        height: '100%',
-        opacity: 0,
-        cursor: 'pointer',
-    },
-    label: {
-        flex: 1,
-        padding: '6px 12px',
-        cursor: 'pointer',
-        color: '#495057',
-        fontSize: '0.875rem',
-        lineHeight: '1.5',
-    },
-};
+const Form = () => {
 
-const HeroForm = () => {
-    const [file, setFile] = useState(null);
     const [openSnackbar, setOpenSnackbar] = useState(false);
-    const fileInputRef = useRef(null);
 
     const formik = useFormik({
         initialValues: {
-            title: '',
-            content: '',
-            heroImage: '',
+            vision: '',
+            mission: '',
         },
         validationSchema: validationSchema,
 
         onSubmit: (values, { resetForm }) => {
             const formData = new FormData();
-            formData.append('title', values.title);
-            formData.append('content', values.content);
-            if (file) {
-                formData.append('heroImage', file);
-            }
+            formData.append('vision', values.vision);
+            formData.append('mission', values.mission);
 
             // Log FormData contents
             for (let [key, value] of formData.entries()) {
@@ -77,26 +45,14 @@ const HeroForm = () => {
 
             // Simulate form submission
             setTimeout(() => {
-                console.log('File input ref:', fileInputRef.current);
                 console.log('Form data submitted:', formData);
                 resetForm(); // Reset form fields
-                setFile(null); // Clear the file state
-                if (fileInputRef.current) {
-                    fileInputRef.current.value = ''; // Clear the file input value
-                }
                 setOpenSnackbar(true); // Show success Snackbar
             }, 500);
 
         },
 
     });
-
-    // Handle file change
-    const handleFileChange = (event) => {
-        const selectedFile = event.currentTarget.files[0];
-        setFile(selectedFile); // Update the state with the selected file
-        formik.setFieldValue('heroImage', selectedFile); // Set Formik field value for validation
-    }
 
     const handleCloseSnackbar = () => {
         setOpenSnackbar(false);
@@ -110,64 +66,40 @@ const HeroForm = () => {
                     spacing={3}
                     direction='column'
                 >
-                    <Grid item xs={12}>
-                        <Stack spacing={1}>
-                            <MUITextField
-                                label='Title'
-                                name='title'
-                                placeholder='Enter Title'
-                                value={formik.values.title}
-                                onChange={formik.handleChange}
-                                onBlur={formik.handleBlur}
-                                fullWidth
-                                error={formik.touched.title && Boolean(formik.errors.title)}
-                                helperText={formik.touched.title && formik.errors.title}
-                            />
-                        </Stack>
-                    </Grid>
 
                     <Grid item xs={12}>
                         <Stack spacing={1}>
                             <MUITextField
-                                label='Content'
-                                name='content'
-                                placeholder='Enter Title'
-                                value={formik.values.content}
+                                label='Vision'
+                                name='vision'
+                                placeholder='Enter Vision'
+                                value={formik.values.vision}
                                 onChange={formik.handleChange}
                                 onBlur={formik.handleBlur}
                                 fullWidth
                                 multiline
                                 rows={4}
-                                error={formik.touched.content && Boolean(formik.errors.content)}
-                                helperText={formik.touched.content && formik.errors.content}
+                                error={formik.touched.vision && Boolean(formik.errors.vision)}
+                                helperText={formik.touched.vision && formik.errors.vision}
                             />
                         </Stack>
                     </Grid>
 
                     <Grid item xs={12}>
                         <Stack spacing={1}>
-                            {/* <MUITextField
-                            label="Upload Hero Image"
-                            name="heroImage"
-                            type="file"
-                            ref={fileInputRef}
-                            onChange={handleFileChange}
-                            onBlur={formik.handleBlur}
-                            fullWidth
-                            inputProps={{ accept: 'image/*' }}
-                        /> */}
-
-                            <div style={styles.inputWrapper}>
-                                <input
-                                    type="file"
-                                    name="heroImage"
-                                    ref={fileInputRef}
-                                    onChange={handleFileChange}
-                                    onBlur={formik.handleBlur}
-                                    accept="image/*"
-                                    style={{ width: '100%' }}
-                                />
-                            </div>
+                            <MUITextField
+                                label='Mission'
+                                name='mission'
+                                placeholder='Enter Mission'
+                                value={formik.values.mission}
+                                onChange={formik.handleChange}
+                                onBlur={formik.handleBlur}
+                                fullWidth
+                                multiline
+                                rows={4}
+                                error={formik.touched.mission && Boolean(formik.errors.mission)}
+                                helperText={formik.touched.mission && formik.errors.mission}
+                            />
                         </Stack>
                     </Grid>
 
@@ -186,6 +118,7 @@ const HeroForm = () => {
                     </Grid>
                 </Grid>
             </form >
+
             <Snackbar
                 open={openSnackbar}
                 autoHideDuration={6000}
@@ -202,10 +135,7 @@ const HeroForm = () => {
                 </Alert>
             </Snackbar>
         </>
-
-
-
     )
 }
 
-export default HeroForm
+export default Form
