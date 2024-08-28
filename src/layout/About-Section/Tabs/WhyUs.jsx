@@ -2,25 +2,31 @@ import React from 'react'
 
 import { Box, Grid } from '@mui/material'
 
-import Content from './WhyUs/Content'
-import Form from './WhyUs/Form'
+import Content from './WhyUs/Content/Content'
+import Form from './WhyUs/Content/Form'
 
+import MUITabs from 'components/common/MUITabs'
+
+import Section from './WhyUs/Section'
+import List from './WhyUs/List'
+
+const tabs = [
+    {
+        label: 'Content',
+        content: <Section />
+    },
+    {
+        label: 'List',
+        content: <List />
+    },
+];
 
 const WhyUs = () => {
     return (
         <Box>
-            <Grid
-                container
-                spacing={6}
-            >
-                <Grid item xs={12} md={5}>
-                    <Form />
-                </Grid>
-
-                <Grid item xs={12} md={7}>
-                    <Content />
-                </Grid>
-            </Grid>
+            <MUITabs
+                tabs={tabs}
+            />
         </Box>
     )
 }

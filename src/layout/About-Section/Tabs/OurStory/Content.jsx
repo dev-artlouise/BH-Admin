@@ -4,28 +4,28 @@ import MainCard from 'components/MainCard'
 const Content = () => {
     return (
         <MainCard
-            Title='Current Hero Section'
+            Title='Current Section'
         >
 
             <Typography
                 variant='h6'
                 gutterBottom
             >
-                Current Reputation Content
+                Current Content
             </Typography>
 
             <Typography
                 variant='h4'
                 gutterBottom
             >
-                WE ARE BROADHEADERS
+                OUT STORY
             </Typography>
 
             <Typography
                 variant="h2"
                 gutterBottom
             >
-                We bring your ideas to life and build products people love
+                Lorem ipsum dolor sit amen, consenter nipissing eli, sed do elusion tempos incident ut laborers et doolie magna alissa.
             </Typography>
 
             <Typography

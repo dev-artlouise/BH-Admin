@@ -1,9 +1,10 @@
+import React from 'react'
+
 import { Box, Grid } from '@mui/material'
+import Form from './List/Form'
+import ListContent from './List/List'
 
-import Content from './OurTeam/Content'
-import Form from './OurTeam/Form'
-
-const OurTeam = () => {
+const List = () => {
     return (
         <Box>
             <Grid
@@ -15,11 +16,11 @@ const OurTeam = () => {
                 </Grid>
 
                 <Grid item xs={12} md={7}>
-                    <Content />
+                    <ListContent />
                 </Grid>
             </Grid>
         </Box>
     )
 }
 
-export default OurTeam
+export default List

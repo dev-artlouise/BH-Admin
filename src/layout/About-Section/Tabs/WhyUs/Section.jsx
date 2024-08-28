@@ -1,9 +1,11 @@
+import React from 'react'
+
 import { Box, Grid } from '@mui/material'
 
-import Content from './OurTeam/Content'
-import Form from './OurTeam/Form'
+import Content from './Content/Content'
+import Form from './Content/Form'
 
-const OurTeam = () => {
+const Section = () => {
     return (
         <Box>
             <Grid
@@ -22,4 +24,4 @@ const OurTeam = () => {
     )
 }
 
-export default OurTeam
+export default Section
