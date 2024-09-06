@@ -6,6 +6,7 @@ import * as Yup from 'yup';
 import { Grid, Stack, Button, Snackbar, Alert } from '@mui/material'
 
 import MUITextField from 'components/common/MUITextField'
+import MUIButton from 'components/common/MUIButton';
 
 const validationSchema = Yup.object({
     title: Yup.string().required('Title is required'),
@@ -172,17 +173,13 @@ const HeroForm = () => {
                     </Grid>
 
                     <Grid item xs={12}>
-                        <Button
-                            disableElevation
-                            // disabled={isSubmitting}
-                            fullWidth
-                            size="large"
-                            type="submit"
-                            variant="contained"
-                            color="primary"
-                        >
-                            Submit
-                        </Button>
+                        <MUIButton
+                            label='Submit'
+                            size='large'
+                            type='submit'
+                            variant='contained'
+                            color='primary'
+                        />
                     </Grid>
                 </Grid>
             </form >
@@ -202,9 +199,6 @@ const HeroForm = () => {
                 </Alert>
             </Snackbar>
         </>
-
-
-
     )
 }
 
