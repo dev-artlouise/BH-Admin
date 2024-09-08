@@ -5,11 +5,10 @@ import * as Yup from 'yup';
 import { Grid, Stack, Snackbar, Alert, FormHelperText } from '@mui/material';
 import MUITextField from 'components/common/MUITextField';
 import MUIButton from 'components/common/MUIButton';
-import { createCompany, deleteCompany } from 'services/companiesServices';
+import { createCompany } from 'services/companiesServices';
 import { useCustomMutation } from 'services/customMutation';
 import { companyStyles } from 'styles/companyStyles';
-import { CloudUploadOutlined, UploadFileOutlined } from '@mui/icons-material';
-import { grey } from '@ant-design/colors';
+import { CloudUploadOutlined } from '@mui/icons-material';
 import { blueGrey } from '@mui/material/colors';
 
 const validationSchema = Yup.object({
@@ -17,10 +16,10 @@ const validationSchema = Yup.object({
   urlimage: Yup.mixed()
     .required('Image file is reequired') // Check if image file is not null
     .test('fileSize', 'The file is too large', (value) => {
-      return value && value.size <= 2048 * 1024; // 2MB in bytes
+      return value && value.size <= 2048 * 1024; // Max is 2MB in bytes [can be adjusted in the server]
     })
     .test('fileFormat', 'Unsupported File Format', (value) => {
-      return value && ['image/jpeg', 'image/png'].includes(value.type); // Validate file type || jpeg and png files are only supported
+      return value && ['image/jpeg', 'image/png'].includes(value.type); // Validate file type || only JPEG and PNG files are supported
     })
 });
 
@@ -52,7 +51,8 @@ const CompanyForm = () => {
     setSnackbarMessage('Company submitted successfully!');
     setSnackbarOpen(true);
     formik.resetForm(); // Reset the form after submission
-    setFile(null);
+    setFile(null); // Reset the file state
+
     if (fileInputRef.current) {
       fileInputRef.current.value = ''; // Clear the file input value
     }
@@ -135,6 +135,8 @@ const CompanyForm = () => {
               />
               <CloudUploadOutlined style={{ fontSize: 20, color: blueGrey[700] }} />
             </div>
+
+            {/* Error display for file upload */}
             <FormHelperText>
               {formik.touched.urlimage && formik.errors.urlimage ? <div style={{ color: 'red' }}>{formik.errors.urlimage}</div> : null}
             </FormHelperText>
@@ -147,7 +149,7 @@ const CompanyForm = () => {
       </Grid>
 
       {/* Snackbar Notification */}
-      <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={handleCloseSnackbar}>
+      <Snackbar open={snackbarOpen} autoHideDuration={4000} onClose={handleCloseSnackbar}>
         <Alert onClose={handleCloseSnackbar} severity={isError ? 'error' : 'success'}>
           {snackbarMessage}
         </Alert>

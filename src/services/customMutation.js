@@ -7,7 +7,7 @@ export const useCustomMutation = (mutationFn, queryKey, onSuccess, onError) => {
     mutationFn,
     onSuccess: (data) => {
       if (queryKey) {
-        queryClient.invalidateQueries(queryKey);
+        queryClient.invalidateQueries(queryKey); //  To ensure the app is in sync with the latest data from the server.
       }
 
       if (onSuccess) {
