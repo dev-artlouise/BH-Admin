@@ -5,31 +5,18 @@ import ClearIcon from '@mui/icons-material/Clear';
 import { DeleteOutlined } from '@ant-design/icons';
 
 const MUIImageCard = ({ imageSrc, title, onDelete }) => {
+  return (
+    <Card style={{ maxWidth: 345, position: 'relative' }}>
+      <CardMedia component="img" height="140" image={imageSrc} alt={title} />
+      <CardContent sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <Typography variant="h6">{title}</Typography>
 
-    return (
-        <Card style={{ maxWidth: 345, position: 'relative' }}>
-            <CardMedia
-                component="img"
-                height="140"
-                image={imageSrc}
-                alt={title}
-            />
-            <CardContent sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <Typography variant="h6">
-                    {title}
-                </Typography>
-
-                <IconButton
-                    size='large'
-                    onClick={onDelete}
-                    aria-label="delete"
-                    color='error'
-                >
-                    <DeleteOutlined />
-                </IconButton>
-            </CardContent>
-        </Card>
-    );
+        <IconButton size="large" onClick={onDelete} aria-label="delete" color="error">
+          <DeleteOutlined />
+        </IconButton>
+      </CardContent>
+    </Card>
+  );
 };
 
 export default MUIImageCard;
