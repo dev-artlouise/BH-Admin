@@ -2,128 +2,160 @@ import { useState, useRef } from 'react';
 
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-
-import { Grid, Stack, InputLabel, OutlinedInput, Button } from '@mui/material'
-
+import { Grid, Stack, Snackbar, Alert, FormHelperText } from '@mui/material';
 import MUITextField from 'components/common/MUITextField';
+import MUIButton from 'components/common/MUIButton';
+import { createCompany } from 'services/companiesServices';
+import { useCustomMutation } from 'services/customMutation';
+import { companyStyles } from 'styles/companyStyles';
+import { CloudUploadOutlined } from '@mui/icons-material';
+import { blueGrey } from '@mui/material/colors';
 
 const validationSchema = Yup.object({
-    companyName: Yup.string().required('Company Name is required'),
+  name: Yup.string().required('Company name is required'),
+  urlimage: Yup.mixed()
+    .required('Image file is reequired') // Check if image file is not null
+    .test('fileSize', 'The file is too large', (value) => {
+      return value && value.size <= 2048 * 1024; // Max is 2MB in bytes [can be adjusted in the server]
+    })
+    .test('fileFormat', 'Unsupported File Format', (value) => {
+      return value && ['image/jpeg', 'image/png'].includes(value.type); // Validate file type || only JPEG and PNG files are supported
+    })
 });
 
-const styles = {
-    inputWrapper: {
-        position: 'relative',
-        display: 'flex',
-        alignItems: 'center',
-        border: '1px solid #ced4da',
-        borderRadius: '4px',
-        padding: '12px',
-        backgroundColor: '#fff',
-    },
-    fileInput: {
-        position: 'absolute',
-        width: '100%',
-        height: '100%',
-        opacity: 0,
-        cursor: 'pointer',
-    },
-    label: {
-        flex: 1,
-        padding: '6px 12px',
-        cursor: 'pointer',
-        color: '#495057',
-        fontSize: '0.875rem',
-        lineHeight: '1.5',
-    },
-};
-
 const CompanyForm = () => {
+  const [file, setFile] = useState(null);
+  const fileInputRef = useRef(null);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
 
-    const [file, setFile] = useState(null);
-    const fileInputRef = useRef(null);
+  const formik = useFormik({
+    initialValues: {
+      name: '',
+      urlimage: null
+    },
 
-    const formik = useFormik({
-        initialValues: {
-            companyName: '',
-            companyImage: '',
-        },
+    validationSchema: validationSchema,
 
-        validationSchema: validationSchema,
+    onSubmit: (values) => {
+      const formData = new FormData();
+      formData.append('name', values.name); // Append the text field 'name'
+      formData.append('urlimage', file); // Append the file field 'urlimage'
 
-        onSubmit: (values) => {
-            console.log(values)
-        }
-    })
+      // Now trigger the mutation
+      createCompanyMutation(formData);
+    }
+  });
 
-    // Handle file change
-    const handleFileChange = (event) => {
-        const selectedFile = event.currentTarget.files[0];
-        setFile(selectedFile); // Update the state with the selected file
-        formik.setFieldValue('heroImage', selectedFile); // Set Formik field value for validation
+  const onSuccess = () => {
+    setSnackbarMessage('Company submitted successfully!');
+    setSnackbarOpen(true);
+    formik.resetForm(); // Reset the form after submission
+    setFile(null); // Reset the file state
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ''; // Clear the file input value
+    }
+  };
+
+  const onError = (error) => {
+    let message = ''; // To store message value
+
+    switch (error.status) {
+      case 404: // To handle Unprocessable Content
+        message = 'Something went wrong. Please contact developer.';
+        break;
+
+      default:
+        message = error.response.data.message || 'An error occurred';
     }
 
-    return (
-        <form onSubmit={formik.handleSubmit}>
-            <Grid
-                container
-                spacing={3}
-                direction='column'
+    setSnackbarMessage(message);
+    setSnackbarOpen(true);
+  };
+
+  // Use the custom mutation hook
+  const {
+    mutate: createCompanyMutation,
+    isLoading,
+    isError
+  } = useCustomMutation(
+    createCompany, // API request
+    ['companies'], // Query key to invalidate
+    onSuccess, // Function to trigger for successful request
+    onError
+  );
+
+  // Handle file change
+  const handleFileChange = (event) => {
+    const selectedFile = event.currentTarget.files[0];
+    setFile(selectedFile); // Update the state with the selected file
+    formik.setFieldValue('urlimage', selectedFile); // Set Formik field value for validation
+  };
+
+  const handleCloseSnackbar = () => {
+    setSnackbarOpen(false);
+  };
+
+  return (
+    <form onSubmit={formik.handleSubmit}>
+      <Grid container spacing={3} direction="column">
+        <Grid item xs={12}>
+          <Stack spacing={1}>
+            <MUITextField
+              label="Company Name"
+              name="name"
+              placeholder="Enter Company Name"
+              value={formik.values.name}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              fullWidth
+              error={formik.touched.name && Boolean(formik.errors.name)}
+              helperText={formik.touched.name && formik.errors.name}
+            />
+          </Stack>
+        </Grid>
+
+        <Grid item xs={12}>
+          <Stack spacing={1}>
+            <div
+              style={{
+                ...companyStyles.inputWrapper,
+                border: formik.errors.urlimage && formik.touched.urlimage ? '1px solid red' : '1px solid lightgrey'
+              }}
             >
-                <Grid
-                    item
-                    xs={12}
-                >
-                    <Stack spacing={1}>
+              <input
+                type="file"
+                name="urlimage" // Ensure correct field name
+                ref={fileInputRef}
+                onChange={handleFileChange}
+                onBlur={formik.handleBlur}
+                accept="image/*"
+                style={{ width: '100%' }}
+              />
+              <CloudUploadOutlined style={{ fontSize: 20, color: blueGrey[700] }} />
+            </div>
 
-                        <MUITextField
-                            label='Company Name'
-                            name='companyName'
-                            placeholder='Enter Company Name'
-                            value={formik.values.companyName}
-                            onChange={formik.handleChange}
-                            onBlur={formik.handleBlur}
-                            fullWidth
-                            error={formik.touched.companyName && Boolean(formik.errors.companyName)}
-                            helperText={formik.touched.companyName && formik.errors.companyName}
-                        />
-                    </Stack>
+            {/* Error display for file upload */}
+            <FormHelperText>
+              {formik.touched.urlimage && formik.errors.urlimage ? <div style={{ color: 'red' }}>{formik.errors.urlimage}</div> : null}
+            </FormHelperText>
+          </Stack>
+        </Grid>
 
-                </Grid>
+        <Grid item xs={12}>
+          <MUIButton size={'large'} type={'submit'} variant={'contained'} color={'primary'} label={'Submit'} isLoading={isLoading} />
+        </Grid>
+      </Grid>
 
-                <Grid item xs={12}>
-                    <Stack spacing={1}>
-                        <div style={styles.inputWrapper}>
-                            <input
-                                type="file"
-                                name="companyImage"
-                                ref={fileInputRef}
-                                onChange={handleFileChange}
-                                onBlur={formik.handleBlur}
-                                accept="image/*"
-                                style={{ width: '100%' }}
-                            />
-                        </div>
-                    </Stack>
-                </Grid>
+      {/* Snackbar Notification */}
+      <Snackbar open={snackbarOpen} autoHideDuration={4000} onClose={handleCloseSnackbar}>
+        <Alert onClose={handleCloseSnackbar} severity={isError ? 'error' : 'success'}>
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
+    </form>
+  );
+};
 
-                <Grid item xs={12}>
-                    <Button
-                        disableElevation
-                        // disabled={isSubmitting}
-                        fullWidth
-                        size="large"
-                        type="submit"
-                        variant="contained"
-                        color="primary">
-                        Submit
-                    </Button>
-                </Grid>
-
-
-            </Grid>
-        </form>
-    )
-}
-
-export default CompanyForm
+export default CompanyForm;
