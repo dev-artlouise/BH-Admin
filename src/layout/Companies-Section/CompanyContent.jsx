@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useState } from 'react';
+import { Fragment, useState } from 'react';
 
 import {
   Typography,
@@ -13,15 +13,14 @@ import {
   DialogContentText,
   DialogActions
 } from '@mui/material';
-
-import { useQuery } from 'react-query';
-
 import MainCard from 'components/MainCard';
 
-import { getCompanies, deleteCompany } from 'services/companiesServices';
+import { useQuery } from 'react-query';
+import { deleteCompany } from 'services/companiesServices';
 import CompanyCardComponent from 'components/cards/company/CompanyCardComponent';
 import { useCustomMutation } from 'services/customMutation';
 import { LoadingButton } from '@mui/lab';
+import useCompanyHook from 'hooks/CompanyHook';
 
 const CompanyContent = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -29,16 +28,13 @@ const CompanyContent = () => {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
 
-  // const { data: companies, isLoading } = useQuery('companies', getCompanies);
-
-  const { data: companies = [], isLoading } = useQuery('companies', getCompanies);
-
-  // Define the delete mutation
+  // Hooks
+  const { getCompanies, getCompany } = useCompanyHook();
+  const { data: companies = [], isLoading } = useQuery('companies', getCompanies, { refetchOnWindowFocus: false });
 
   const onSuccess = () => {
     setSnackbarMessage('Company deleted successfully!');
     setSnackbarOpen(true);
-
     setDialogOpen(false); // Close the dialog on successful deletion
   };
 
@@ -77,6 +73,11 @@ const CompanyContent = () => {
     setSnackbarOpen(false);
   };
 
+  // Handle click edit
+  const handleEdit = (id) => {
+    console.log(getCompany(id));
+  };
+
   return (
     <Fragment>
       <MainCard title="Current Company Section" darkTitle contentSX={{ maxHeight: 450, overflowY: 'auto' }}>
@@ -101,7 +102,7 @@ const CompanyContent = () => {
                 onDelete={() => handleDelete(id)}
               /> */}
 
-                <CompanyCardComponent title={name} url={urlimage} onDelete={() => handleDelete(id)} onEdit={() => handleDelete(id)} />
+                <CompanyCardComponent title={name} url={urlimage} onDelete={() => handleDelete(id)} onEdit={() => handleEdit(id)} />
               </Grid>
             ))
           ) : (
