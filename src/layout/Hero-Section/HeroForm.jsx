@@ -42,8 +42,9 @@ const styles = {
 
 const HeroForm = () => {
     const [file, setFile] = useState(null);
-    const [openSnackbar, setOpenSnackbar] = useState(false);
     const fileInputRef = useRef(null);
+    const [openSnackbar, setOpenSnackbar] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState('');
 
     const formik = useFormik({
         initialValues: {
@@ -104,50 +105,50 @@ const HeroForm = () => {
     };
 
     return (
-        <>
-            <form onSubmit={formik.handleSubmit}>
-                <Grid
-                    container
-                    spacing={3}
-                    direction='column'
-                >
-                    <Grid item xs={12}>
-                        <Stack spacing={1}>
-                            <MUITextField
-                                label='Title'
-                                name='title'
-                                placeholder='Enter Title'
-                                value={formik.values.title}
-                                onChange={formik.handleChange}
-                                onBlur={formik.handleBlur}
-                                fullWidth
-                                error={formik.touched.title && Boolean(formik.errors.title)}
-                                helperText={formik.touched.title && formik.errors.title}
-                            />
-                        </Stack>
-                    </Grid>
 
-                    <Grid item xs={12}>
-                        <Stack spacing={1}>
-                            <MUITextField
-                                label='Content'
-                                name='content'
-                                placeholder='Enter Title'
-                                value={formik.values.content}
-                                onChange={formik.handleChange}
-                                onBlur={formik.handleBlur}
-                                fullWidth
-                                multiline
-                                rows={4}
-                                error={formik.touched.content && Boolean(formik.errors.content)}
-                                helperText={formik.touched.content && formik.errors.content}
-                            />
-                        </Stack>
-                    </Grid>
+        <form onSubmit={formik.handleSubmit}>
+            <Grid
+                container
+                spacing={3}
+                direction='column'
+            >
+                <Grid item xs={12}>
+                    <Stack spacing={1}>
+                        <MUITextField
+                            label='Title'
+                            name='title'
+                            placeholder='Enter Title'
+                            value={formik.values.title}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            fullWidth
+                            error={formik.touched.title && Boolean(formik.errors.title)}
+                            helperText={formik.touched.title && formik.errors.title}
+                        />
+                    </Stack>
+                </Grid>
 
-                    <Grid item xs={12}>
-                        <Stack spacing={1}>
-                            {/* <MUITextField
+                <Grid item xs={12}>
+                    <Stack spacing={1}>
+                        <MUITextField
+                            label='Content'
+                            name='content'
+                            placeholder='Enter Title'
+                            value={formik.values.content}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            fullWidth
+                            multiline
+                            rows={4}
+                            error={formik.touched.content && Boolean(formik.errors.content)}
+                            helperText={formik.touched.content && formik.errors.content}
+                        />
+                    </Stack>
+                </Grid>
+
+                <Grid item xs={12}>
+                    <Stack spacing={1}>
+                        {/* <MUITextField
                             label="Upload Hero Image"
                             name="heroImage"
                             type="file"
@@ -158,31 +159,31 @@ const HeroForm = () => {
                             inputProps={{ accept: 'image/*' }}
                         /> */}
 
-                            <div style={styles.inputWrapper}>
-                                <input
-                                    type="file"
-                                    name="heroImage"
-                                    ref={fileInputRef}
-                                    onChange={handleFileChange}
-                                    onBlur={formik.handleBlur}
-                                    accept="image/*"
-                                    style={{ width: '100%' }}
-                                />
-                            </div>
-                        </Stack>
-                    </Grid>
-
-                    <Grid item xs={12}>
-                        <MUIButton
-                            label='Submit'
-                            size='large'
-                            type='submit'
-                            variant='contained'
-                            color='primary'
-                        />
-                    </Grid>
+                        <div style={styles.inputWrapper}>
+                            <input
+                                type="file"
+                                name="heroImage"
+                                ref={fileInputRef}
+                                onChange={handleFileChange}
+                                onBlur={formik.handleBlur}
+                                accept="image/*"
+                                style={{ width: '100%' }}
+                            />
+                        </div>
+                    </Stack>
                 </Grid>
-            </form >
+
+                <Grid item xs={12}>
+                    <MUIButton
+                        label='Submit'
+                        size='large'
+                        type='submit'
+                        variant='contained'
+                        color='primary'
+                    />
+                </Grid>
+            </Grid>
+
             <Snackbar
                 open={openSnackbar}
                 autoHideDuration={6000}
@@ -198,7 +199,8 @@ const HeroForm = () => {
                     Form submitted successfully!
                 </Alert>
             </Snackbar>
-        </>
+        </form >
+
     )
 }
 
