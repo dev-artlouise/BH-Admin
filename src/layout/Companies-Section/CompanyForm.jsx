@@ -9,6 +9,18 @@ import { useCustomMutation } from 'services/customMutation';
 import { companyStyles } from 'styles/companyStyles';
 import { CloudUploadOutlined, RestoreOutlined } from '@mui/icons-material';
 import { blueGrey } from '@mui/material/colors';
+
+const validationSchema = Yup.object({
+  name: Yup.string().required('Company name is required'),
+  urlimage: Yup.mixed()
+    .required('Image file is required') // Check if image file is not null
+    .test('fileSize', 'The file is too large', (value) => {
+      return value && value.size <= 2048 * 1024; // Max is 2MB in bytes [can be adjusted in the server]
+    })
+    .test('fileFormat', 'Unsupported File Format', (value) => {
+      return value && ['image/jpeg', 'image/png', 'image/svg+xml'].includes(value.type); // Validate file type || only JPEG and PNG files are supported
+    })
+});
 import useCompanyHook from 'hooks/CompanyHook';
 import { ClearOutlined } from '@ant-design/icons';
 

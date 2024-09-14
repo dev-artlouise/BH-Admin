@@ -1,31 +1,78 @@
-import { Typography, InputLabel } from '@mui/material'
-import MainCard from 'components/MainCard'
+import { Fragment, useEffect } from 'react';
+import { Typography, Skeleton } from '@mui/material';
+import MainCard from 'components/MainCard';
+import { useQuery } from 'react-query';
+import { getHeroContent } from 'services/heroServices';
 
 const HeroContent = () => {
+    // Fetch hero content using react-query
+    const { data: heroContent = [], isLoading, isFetching } = useQuery('hero', getHeroContent, {
+        refetchOnWindowFocus: false // Prevent refetch on window focus
+    });
+
+    // Check the structure of heroContent to determine how to access the data
+    // const heroContentData = heroContent?.data || heroContent;
+
+    useEffect(() => {
+        // Log the content data after it is fetched
+        if (heroContent) {
+            console.log(heroContentlength); // Log only when data is available
+        }
+    }, [heroContent]); // Add heroContentData as a dependency to trigger on change
+
     return (
-        <MainCard
-            Title='Current Hero Section'
-        >
-            <Typography
-                variant='h4'
-                gutterBottom
-            >Title
-            </Typography>
-
-            <Typography
-                variant="body1"
-                gutterBottom
+        <>
+            <MainCard
+                title="Current Hero Section"
+                darkTitle
+                contentSX={{ maxHeight: 450, overflowY: 'auto' }}
             >
-                Lorem ipsum dolor sit amen, consenter nipissing eli, sed do elusion tempos incident ut laborers et doolie magna alissa. Ut enif ad
-                minim venice, quin nostrum exercitation illampu laborings nisi ut liquid ex ea commons construal. Duos aube grue dolor in
-                reprehended in voltage veil esse colum doolie eu fujian bulla parian. Exceptive sin ocean cuspidate non president, sunk in culpa qui
-                officiate descent molls anim id est labours.
-            </Typography>
+                {/* Display loading skeletons if still loading or fetching */}
+                {isLoading || isFetching ? (
+                    <Fragment>
+                        <Skeleton
+                            width="50%"
+                            height={50}
+                            sx={{ marginBottom: '1rem' }}
+                        />
+                        <Skeleton
+                            variant="rectangular"
+                            height={140}
+                            sx={{ marginBottom: '1rem' }}
+                        />
+                        <Skeleton width="100%" />
+                    </Fragment>
+                ) : heroContent && heroContent.length > 0 ? (
+                    // Display content when fetched
+                    heroContent?.data.map(({ title, image, content }, index) => (
+                        <Fragment key={index}>
+                            <Typography variant="h4" gutterBottom>
+                                {title}
+                            </Typography>
 
-            IMAGE SECTION HERE
+                            {/* IMAGE SECTION PLACEHOLDER */}
+                            <div>
+                                <img
+                                    src={image || 'https://via.placeholder.com/150'}
+                                    alt="Hero section"
+                                    style={{ width: '100%', height: 'auto' }}
+                                />
+                            </div>
 
-        </MainCard>
-    )
-}
+                            <Typography variant="body1" gutterBottom>
+                                {content}
+                            </Typography>
+                        </Fragment>
+                    ))
+                ) : (
+                    // Display 'No Hero Content Available' only if not loading and no data is available
+                    <Typography variant="body1" align="center">
+                        No Hero Content Available
+                    </Typography>
+                )}
+            </MainCard>
+        </>
+    );
+};
 
-export default HeroContent
+export default HeroContent;

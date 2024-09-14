@@ -1,9 +1,21 @@
 // heroServices.js
 import axios from 'axios';
+import { API_BASE_URL } from './API';
 
-const API_BASE_URL = 'http://127.0.0.1:8000/api';
+const PATH = 'hero-section'
 
 export const createHero = async (formData) => {
-    const response = await axios.post(`${API_BASE_URL}/hero-section`, formData);
+    const response = await axios.post(`${API_BASE_URL}/${PATH}`, formData);
     return response.data;
 };
+
+export const getHeroContent = async () => {
+    try {
+        const response = await axios.get(`${API_BASE_URL}/${PATH}`);
+
+        return response.data
+    } catch (error) {
+        // You can handle the error here or rethrow it
+        throw new Error('Failed to fetch hero Contents: ' + error.message);
+    }
+}
