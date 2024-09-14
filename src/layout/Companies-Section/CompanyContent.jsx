@@ -28,9 +28,13 @@ const CompanyContent = () => {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
 
-  // Hooks
-  const { getCompanies, getCompany } = useCompanyHook();
-  const { data: companies = [], isLoading } = useQuery('companies', getCompanies, { refetchOnWindowFocus: false });
+  // const { data: companies, isLoading } = useQuery('companies', getCompanies);
+
+  const { data: companies = [], isLoading } = useQuery('companies', getCompanies, {
+    refetchOnWindowFocus: false //remove refetch if interact on screen
+  });
+
+  // Define the delete mutation
 
   const onSuccess = () => {
     setSnackbarMessage('Company deleted successfully!');
@@ -80,7 +84,11 @@ const CompanyContent = () => {
 
   return (
     <Fragment>
-      <MainCard title="Current Company Section" darkTitle contentSX={{ maxHeight: 450, overflowY: 'auto' }}>
+      <MainCard
+        title="Current Company Section"
+        darkTitle
+        contentSX={{ maxHeight: 450, overflowY: 'auto' }}
+      >
         <Grid container spacing={3}>
           {/* loop the company images here with companies api */}
 

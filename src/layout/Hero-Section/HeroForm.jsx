@@ -1,103 +1,95 @@
 import { useState, useRef } from 'react';
-
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-
-import { Grid, Stack, Button, Snackbar, Alert } from '@mui/material'
+import { Grid, Stack, Button, Snackbar, Alert, FormHelperText } from '@mui/material'
+import { createHero } from 'services/heroServices';
+import { useCustomMutation } from 'services/customMutation';
+import { companyStyles } from 'styles/companyStyles';
+import { CloudUploadOutlined } from '@mui/icons-material';
+import { blueGrey } from '@mui/material/colors';
 
 import MUITextField from 'components/common/MUITextField'
 import MUIButton from 'components/common/MUIButton';
 
 const validationSchema = Yup.object({
     title: Yup.string().required('Title is required'),
+    image: Yup.mixed()
+        .required('Image file is required') // Check if image file is not null
+        .test('fileSize', 'The file is too large', (value) => {
+            return value && value.size <= 2048 * 1024; // Max is 2MB in bytes [can be adjusted in the server]
+        })
+        .test('fileFormat', 'Unsupported File Format', (value) => {
+            return value && ['image/jpeg', 'image/png', 'image/svg+xml'].includes(value.type); // Validate file type || only JPEG and PNG files are supported
+        }),
     content: Yup.string().required('Content is required'),
 });
-
-const styles = {
-    inputWrapper: {
-        position: 'relative',
-        display: 'flex',
-        alignItems: 'center',
-        border: '1px solid #ced4da',
-        borderRadius: '4px',
-        padding: '12px',
-        backgroundColor: '#fff',
-    },
-    fileInput: {
-        position: 'absolute',
-        width: '100%',
-        height: '100%',
-        opacity: 0,
-        cursor: 'pointer',
-    },
-    label: {
-        flex: 1,
-        padding: '6px 12px',
-        cursor: 'pointer',
-        color: '#495057',
-        fontSize: '0.875rem',
-        lineHeight: '1.5',
-    },
-};
 
 const HeroForm = () => {
     const [file, setFile] = useState(null);
     const fileInputRef = useRef(null);
-    const [openSnackbar, setOpenSnackbar] = useState(false);
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState('');
 
     const formik = useFormik({
         initialValues: {
             title: '',
             content: '',
-            heroImage: '',
+            image: null,
         },
         validationSchema: validationSchema,
 
-        onSubmit: (values, { resetForm }) => {
+        onSubmit: (values) => {
             const formData = new FormData();
             formData.append('title', values.title);
             formData.append('content', values.content);
-            if (file) {
-                formData.append('heroImage', file);
-            }
-
-            // Log FormData contents
-            for (let [key, value] of formData.entries()) {
-                if (value instanceof File) {
-                    console.log(`${key}: ${value.name}`); // For files, log file name
-                } else {
-                    console.log(`${key}: ${value}`); // For other values
-                }
-            }
-
-            // Example: Send the formData to a server
-            // fetch('/your-api-endpoint', {
-            //   method: 'POST',
-            //   body: formData,
-            // });
-
-            // Simulate form submission
-            setTimeout(() => {
-                console.log('File input ref:', fileInputRef.current);
-                console.log('Form data submitted:', formData);
-                resetForm(); // Reset form fields
-                setFile(null); // Clear the file state
-                if (fileInputRef.current) {
-                    fileInputRef.current.value = ''; // Clear the file input value
-                }
-                setOpenSnackbar(true); // Show success Snackbar
-            }, 500);
-
-        },
-
+            formData.append('image', file)
+            createHeroMutation(formData);
+        }
     });
+
+    const onSuccess = () => {
+        setSnackbarMessage('Hero Content submitted successfully!');
+        setSnackbarOpen(true);
+        formik.resetForm(); // Reset the form after submission
+        setFile(null); // Reset the file state
+
+        if (fileInputRef.current) {
+            fileInputRef.current.value = ''; // Clear the file input value
+        }
+    };
+
+    const onError = (error) => {
+        let message = ''; // To store message value
+
+        switch (error.status) {
+            case 404: // To handle Unprocessable Content
+                message = 'Something went wrong. Please contact developer.';
+                break;
+
+            default:
+                message = error.response.data.message || 'An error occurred';
+        }
+        setSnackbarMessage(message);
+        setSnackbarOpen(true);
+    };
+
+    // Use the custom mutation hook
+    const {
+        mutate: createHeroMutation,
+        isLoading,
+        isError
+    } = useCustomMutation(
+        createHero, // API request
+        ['hero'], // Query key to invalidate
+        onSuccess, // Function to trigger for successful request
+        onError
+    );
 
     // Handle file change
     const handleFileChange = (event) => {
         const selectedFile = event.currentTarget.files[0];
         setFile(selectedFile); // Update the state with the selected file
-        formik.setFieldValue('heroImage', selectedFile); // Set Formik field value for validation
+        formik.setFieldValue('image', selectedFile); // Set Formik field value for validation
     }
 
     const handleCloseSnackbar = () => {
@@ -159,44 +151,38 @@ const HeroForm = () => {
                             inputProps={{ accept: 'image/*' }}
                         /> */}
 
-                        <div style={styles.inputWrapper}>
+                        <div
+                            style={{
+                                ...companyStyles.inputWrapper,
+                                border: formik.errors.image && formik.touched.image ? '1px solid red' : '1px solid lightgrey'
+                            }}
+                        >
                             <input
                                 type="file"
-                                name="heroImage"
+                                name="image"
                                 ref={fileInputRef}
                                 onChange={handleFileChange}
                                 onBlur={formik.handleBlur}
                                 accept="image/*"
                                 style={{ width: '100%' }}
                             />
+                            <CloudUploadOutlined style={{ fontSize: 20, color: blueGrey[700] }} />
                         </div>
+
+                        <FormHelperText>
+                            {formik.touched.image && formik.errors.image ? <div style={{ color: 'red' }}>{formik.errors.image}</div> : null}
+                        </FormHelperText>
                     </Stack>
                 </Grid>
 
                 <Grid item xs={12}>
-                    <MUIButton
-                        label='Submit'
-                        size='large'
-                        type='submit'
-                        variant='contained'
-                        color='primary'
-                    />
+                    <MUIButton size={'large'} type={'submit'} variant={'contained'} color={'primary'} label={'Submit'} isLoading={isLoading} />
                 </Grid>
             </Grid>
 
-            <Snackbar
-                open={openSnackbar}
-                autoHideDuration={6000}
-                onClose={handleCloseSnackbar}
-                anchorOrigin={{ vertical: 'top', horizontal: 'right' }} // Position Snackbar
-                sx={{ width: 'auto' }} // Adjust width if needed
-            >
-                <Alert
-                    onClose={handleCloseSnackbar}
-                    severity="success"
-                    sx={{ fontSize: '1rem', padding: '1rem' }} // Make Alert text larger
-                >
-                    Form submitted successfully!
+            <Snackbar open={snackbarOpen} autoHideDuration={4000} onClose={handleCloseSnackbar}>
+                <Alert onClose={handleCloseSnackbar} severity={isError ? 'error' : 'success'}>
+                    {snackbarMessage}
                 </Alert>
             </Snackbar>
         </form >
