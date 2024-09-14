@@ -31,7 +31,9 @@ const CompanyContent = () => {
 
   // const { data: companies, isLoading } = useQuery('companies', getCompanies);
 
-  const { data: companies = [], isLoading } = useQuery('companies', getCompanies);
+  const { data: companies = [], isLoading } = useQuery('companies', getCompanies, {
+    refetchOnWindowFocus: false //remove refetch if interact on screen
+  });
 
   // Define the delete mutation
 
@@ -79,7 +81,11 @@ const CompanyContent = () => {
 
   return (
     <Fragment>
-      <MainCard title="Current Company Section" darkTitle contentSX={{ maxHeight: 450, overflowY: 'auto' }}>
+      <MainCard
+        title="Current Company Section"
+        darkTitle
+        contentSX={{ maxHeight: 450, overflowY: 'auto' }}
+      >
         <Grid container spacing={3}>
           {/* loop the company images here with companies api */}
 
