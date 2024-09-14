@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useState } from 'react';
+import { Fragment, useState } from 'react';
 
 import {
   Typography,
@@ -13,15 +13,14 @@ import {
   DialogContentText,
   DialogActions
 } from '@mui/material';
-
-import { useQuery } from 'react-query';
-
 import MainCard from 'components/MainCard';
 
-import { getCompanies, deleteCompany } from 'services/companiesServices';
+import { useQuery } from 'react-query';
+import { deleteCompany } from 'services/companiesServices';
 import CompanyCardComponent from 'components/cards/company/CompanyCardComponent';
 import { useCustomMutation } from 'services/customMutation';
 import { LoadingButton } from '@mui/lab';
+import useCompanyHook from 'hooks/CompanyHook';
 
 const CompanyContent = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -40,7 +39,6 @@ const CompanyContent = () => {
   const onSuccess = () => {
     setSnackbarMessage('Company deleted successfully!');
     setSnackbarOpen(true);
-
     setDialogOpen(false); // Close the dialog on successful deletion
   };
 
@@ -79,6 +77,11 @@ const CompanyContent = () => {
     setSnackbarOpen(false);
   };
 
+  // Handle click edit
+  const handleEdit = (id) => {
+    console.log(getCompany(id));
+  };
+
   return (
     <Fragment>
       <MainCard
@@ -107,7 +110,7 @@ const CompanyContent = () => {
                 onDelete={() => handleDelete(id)}
               /> */}
 
-                <CompanyCardComponent title={name} url={urlimage} onDelete={() => handleDelete(id)} onEdit={() => handleDelete(id)} />
+                <CompanyCardComponent title={name} url={urlimage} onDelete={() => handleDelete(id)} onEdit={() => handleEdit(id)} />
               </Grid>
             ))
           ) : (
