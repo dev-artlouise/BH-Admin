@@ -2,7 +2,7 @@ import { SendOutlined } from '@ant-design/icons';
 import { LoadingButton } from '@mui/lab';
 import PropTypes from 'prop-types';
 
-const MUIButton = ({ size, type, variant, color, label, isDisabled, isLoading, endIcon = <SendOutlined /> }) => {
+const MUIButton = ({ size, type, variant, color, label, isDisabled, isLoading, endIcon = <SendOutlined />, onClick, ...props }) => {
   return (
     <LoadingButton
       disableElevation
@@ -15,6 +15,8 @@ const MUIButton = ({ size, type, variant, color, label, isDisabled, isLoading, e
       loading={isLoading}
       loadingPosition="end"
       endIcon={endIcon}
+      onClick={onClick}
+      {...props}
     >
       {label}
     </LoadingButton>
@@ -30,7 +32,8 @@ MUIButton.propTypes = {
   isLoading: PropTypes.bool,
   label: PropTypes.string.isRequired,
   isDisabled: PropTypes.bool,
-  endIcon: PropTypes.element
+  endIcon: PropTypes.element,
+  onClick: PropTypes.func
 };
 
 export default MUIButton;

@@ -1,5 +1,4 @@
 import { Fragment, useState } from 'react';
-
 import {
   Typography,
   Grid,
@@ -14,7 +13,6 @@ import {
   DialogActions
 } from '@mui/material';
 import MainCard from 'components/MainCard';
-
 import { useQuery } from 'react-query';
 import { deleteCompany } from 'services/companiesServices';
 import CompanyCardComponent from 'components/cards/company/CompanyCardComponent';
@@ -28,62 +26,64 @@ const CompanyContent = () => {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
 
-  // Hooks
-  const { getCompanies, getCompany } = useCompanyHook();
+  // Hook for managing company data and state
+  const { getCompanies, getCompany, resetInitialValues } = useCompanyHook();
+
+  // Query to fetch the list of companies
   const { data: companies = [], isLoading } = useQuery('companies', getCompanies, { refetchOnWindowFocus: false });
 
-  const onSuccess = () => {
-    setSnackbarMessage('Company deleted successfully!');
-    setSnackbarOpen(true);
-    setDialogOpen(false); // Close the dialog on successful deletion
-  };
-
-  const onError = () => {
-    setSnackbarMessage('Failed to delete company.');
-    setSnackbarOpen(true);
-    setDialogOpen(false); // Close the dialog on error
-  };
-
-  // Use the custom mutation hook
+  // Mutation hook for deleting a company
   const {
-    mutate: deleteCompanyMutation, // Mutation name
-    isLoading: isLoadingDelete, // Loading state for deleting company data
+    mutate: deleteCompanyMutation,
+    isLoading: isLoadingDelete,
     isError
   } = useCustomMutation(
     deleteCompany, // API request
     ['companies'], // Query key to invalidate
-    onSuccess, // Function to trigger for successful request
-    onError
+    () => {
+      setSnackbarMessage('Company deleted successfully!');
+      setSnackbarOpen(true);
+      resetInitialValues(); // Reset form values after successful deletion
+      setDialogOpen(false); // Close the confirmation dialog
+    },
+    () => {
+      setSnackbarMessage('Failed to delete company.');
+      setSnackbarOpen(true);
+      setDialogOpen(false); // Close the confirmation dialog on error
+    }
   );
 
+  // Open the confirmation dialog for deletion
   const handleDelete = (companyId) => {
-    setSelectedCompanyId(companyId); // Set the selected company ID
-    setDialogOpen(true); // Open the dialog
+    setSelectedCompanyId(companyId); // Set the ID of the company to delete
+    setDialogOpen(true); // Show the confirmation dialog
   };
 
+  // Confirm deletion and trigger the mutation
   const handleConfirmDelete = () => {
-    deleteCompanyMutation(selectedCompanyId); // Trigger delete mutation
+    deleteCompanyMutation(selectedCompanyId); // Execute delete mutation
   };
 
+  // Cancel deletion and close the dialog
   const handleCancelDelete = () => {
-    setDialogOpen(false); // Close the dialog
+    setDialogOpen(false); // Hide the dialog
   };
 
+  // Close the snackbar notification
   const handleCloseSnackbar = () => {
     setSnackbarOpen(false);
   };
 
-  // Handle click edit
+  // Handle click to edit a company
   const handleEdit = (id) => {
-    console.log(getCompany(id));
+    getCompany(id);
   };
 
   return (
     <Fragment>
       <MainCard title="Current Company Section" darkTitle contentSX={{ maxHeight: 450, overflowY: 'auto' }}>
         <Grid container spacing={3}>
-          {/* loop the company images here with companies api */}
-
+          {/* Display skeleton loaders while data is loading */}
           {isLoading ? (
             Array.from({ length: companies?.length || 3 }).map((_, index) => (
               <Grid item xs={4} key={index}>
@@ -93,15 +93,9 @@ const CompanyContent = () => {
                 </MainCard>
               </Grid>
             ))
-          ) : companies && companies?.length > 0 ? (
-            companies?.map(({ id, name, urlimage }, key) => (
+          ) : companies.length > 0 ? (
+            companies.map(({ id, name, urlimage }, key) => (
               <Grid item xs={4} key={key}>
-                {/* <MUIImageCard
-                imageSrc={urlimage ? urlimage : 'https://via.placeholder.com/150'}
-                title={name}
-                onDelete={() => handleDelete(id)}
-              /> */}
-
                 <CompanyCardComponent title={name} url={urlimage} onDelete={() => handleDelete(id)} onEdit={() => handleEdit(id)} />
               </Grid>
             ))
@@ -114,8 +108,9 @@ const CompanyContent = () => {
           )}
         </Grid>
 
+        {/* Confirmation dialog for deletion */}
         <Dialog open={dialogOpen} onClose={handleCancelDelete}>
-          <DialogTitle>Confirm Deletion on </DialogTitle>
+          <DialogTitle>Confirm Deletion</DialogTitle>
           <DialogContent>
             <DialogContentText>Are you sure you want to delete this company?</DialogContentText>
           </DialogContent>
@@ -130,7 +125,7 @@ const CompanyContent = () => {
         </Dialog>
       </MainCard>
 
-      {/* Snackbar Notification */}
+      {/* Snackbar notification for success or error messages */}
       <Snackbar open={snackbarOpen} autoHideDuration={4000} onClose={handleCloseSnackbar}>
         <Alert onClose={handleCloseSnackbar} severity={isError ? 'error' : 'success'}>
           {snackbarMessage}
