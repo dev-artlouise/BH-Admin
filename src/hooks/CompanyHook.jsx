@@ -7,8 +7,8 @@ const PATH = 'companies';
 const SINGULAR_PATH = 'company';
 
 const useCompanyHook = create((set) => ({
-  initialValues: { name: null, urlimage: null },
-
+  isUpdateMode: false,
+  initialValues: { name: '', urlimage: null },
   validationSchema: Yup.object({
     name: Yup.string().required('Company name is required'),
     urlimage: Yup.mixed()
@@ -31,9 +31,12 @@ const useCompanyHook = create((set) => ({
 
   resetInitialValues: () => {
     set(() => ({
-      initialValues: { name: null, urlimage: null }
+      initialValues: { name: '', urlimage: null }
     }));
   },
+
+  // SWITCH UPDATE MODE
+  setUpdateMode: (value) => set({ isUpdateMode: value }),
 
   // GET COMPANIES
   getCompanies: async () => {
@@ -51,7 +54,8 @@ const useCompanyHook = create((set) => ({
     try {
       const response = await axios.get(`${API_BASE_URL}/${SINGULAR_PATH}/${id}`);
       set(() => ({
-        initialValues: response.data
+        initialValues: { ...response.data, urlimageold: response.data.urlimage },
+        isUpdateMode: true
       }));
     } catch (error) {
       throw new Error('Failed to fetch companies: ' + error.message);
@@ -59,7 +63,7 @@ const useCompanyHook = create((set) => ({
   },
 
   // CREATE COMPANY
-  createCompany: async () => {
+  createCompany: async (formData) => {
     const response = await axios.post(`${API_BASE_URL}/${PATH}`, formData);
     return response.data;
   },
@@ -73,6 +77,11 @@ const useCompanyHook = create((set) => ({
   // UPDATE COMPANY
   updateCompany: async (id) => {
     const response = await axios.put(`${API_BASE_URL}/${SINGULAR_PATH}/${id}`);
+    set(() => ({
+      initialValues: { name: '', imageurl: null },
+      isUpdateMode: false
+    }));
+
     return response.data;
   }
 }));
