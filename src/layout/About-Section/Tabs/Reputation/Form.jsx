@@ -1,158 +1,138 @@
-import { useState, useRef } from 'react';
-
+import { useState } from 'react';
 import { useFormik } from 'formik';
-import * as Yup from 'yup';
 
-import { Grid, Stack, Button, Snackbar, Alert } from '@mui/material'
+import { Grid, Stack, Snackbar, Alert } from '@mui/material';
 
-import MUITextField from 'components/common/MUITextField'
-
-const validationSchema = Yup.object({
-    title: Yup.string().required('Title is required'),
-    tagline: Yup.string(),
-    description: Yup.string(),
-});
+import MUITextField from 'components/common/MUITextField';
+import useReputationHook from 'hooks/ReputationHook';
+import { useCustomMutation } from 'services/customMutation';
+import MUIButton from 'components/common/MUIButton';
+import { SaveFilled } from '@ant-design/icons';
 
 const Form = () => {
+  // STATES
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
 
-    const [openSnackbar, setOpenSnackbar] = useState(false);
+  // HOOKS
+  const { createReputation, initialValues, setInitialValues, validationSchema } = useReputationHook();
 
-    const formik = useFormik({
-        initialValues: {
-            title: '',
-            tagline: '',
-            description: '',
-        },
-        validationSchema: validationSchema,
+  // FORMIK SETUP
+  const formik = useFormik({
+    initialValues,
+    validationSchema,
+    onSubmit: (values) => {
+      const formData = new FormData();
 
-        onSubmit: (values, { resetForm }) => {
-            const formData = new FormData();
-            formData.append('title', values.title);
-            formData.append('tagline', values.tagline);
-            formData.append('description', values.description);
+      formData.append('year_in_business', values.year_in_business);
+      formData.append('project_delivered', values.project_delivered);
+      formData.append('satisfied_customer', values.satisfied_customer);
 
-            // Log FormData contents
-            for (let [key, value] of formData.entries()) {
-                if (value instanceof File) {
-                    console.log(`${key}: ${value.name}`); // For files, log file name
-                } else {
-                    console.log(`${key}: ${value}`); // For other values
-                }
-            }
+      reputationMutation(formData);
+    },
+    validateOnChange: true,
+    enableReinitialize: true
+  });
 
-            // Example: Send the formData to a server
-            // fetch('/your-api-endpoint', {
-            //   method: 'POST',
-            //   body: formData,
-            // });
+  const {
+    mutate: reputationMutation,
+    isLoading,
+    isError
+  } = useCustomMutation(
+    createReputation,
+    ['reputations'],
+    () => {
+      setSnackbarMessage('Reputation updated successfully!');
+      setSnackbarOpen(true);
+    },
+    (error) => {
+      const message =
+        error.status === 404 ? 'Something went wrong. Please contact developer.' : error.response.data.message || 'An error occurred';
+      setSnackbarMessage(message);
+      setSnackbarOpen(true);
+    }
+  );
 
-            // Simulate form submission
-            setTimeout(() => {
-                console.log('Form data submitted:', formData);
-                resetForm(); // Reset form fields
-                setOpenSnackbar(true); // Show success Snackbar
-            }, 500);
+  const handleChangeInput = (e) => {
+    const { name, value } = e.target;
+    setInitialValues(name, value);
+  };
 
-        },
+  const handleCloseSnackbar = () => setSnackbarOpen(false);
 
-    });
+  return (
+    <>
+      <form onSubmit={formik.handleSubmit}>
+        <Grid container spacing={3} direction="column">
+          <Grid item xs={12}>
+            <Stack spacing={1}>
+              <MUITextField
+                label="Years in Business"
+                name="year_in_business"
+                placeholder="Years in Business"
+                value={formik.values.year_in_business}
+                onChange={handleChangeInput}
+                onBlur={formik.handleBlur}
+                fullWidth
+                error={formik.touched.year_in_business && Boolean(formik.errors.year_in_business)}
+                helperText={formik.touched.year_in_business && formik.errors.year_in_business}
+              />
+            </Stack>
+          </Grid>
 
-    const handleCloseSnackbar = () => {
-        setOpenSnackbar(false);
-    };
+          <Grid item xs={12}>
+            <Stack spacing={1}>
+              <MUITextField
+                label="Project Delivered"
+                name="project_delivered"
+                placeholder="Project Delivered"
+                value={formik.values.project_delivered}
+                onChange={handleChangeInput}
+                onBlur={formik.handleBlur}
+                fullWidth
+                error={formik.touched.project_delivered && Boolean(formik.errors.project_delivered)}
+                helperText={formik.touched.project_delivered && formik.errors.project_delivered}
+              />
+            </Stack>
+          </Grid>
 
-    return (
-        <>
-            <form onSubmit={formik.handleSubmit}>
-                <Grid
-                    container
-                    spacing={3}
-                    direction='column'
-                >
-                    <Grid item xs={12}>
-                        <Stack spacing={1}>
-                            <MUITextField
-                                label='Title'
-                                name='title'
-                                placeholder='Enter Title'
-                                value={formik.values.title}
-                                onChange={formik.handleChange}
-                                onBlur={formik.handleBlur}
-                                fullWidth
-                                error={formik.touched.title && Boolean(formik.errors.title)}
-                                helperText={formik.touched.title && formik.errors.title}
-                            />
-                        </Stack>
-                    </Grid>
+          <Grid item xs={12}>
+            <Stack spacing={1}>
+              <MUITextField
+                label="Satisfied Customer (%)"
+                name="satisfied_customer"
+                placeholder="Satisfied Customer (%)"
+                value={formik.values.satisfied_customer}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                fullWidth
+                error={formik.touched.satisfied_customer && Boolean(formik.errors.satisfied_customer)}
+                helperText={formik.touched.satisfied_customer && formik.errors.satisfied_customer}
+              />
+            </Stack>
+          </Grid>
 
-                    <Grid item xs={12}>
-                        <Stack spacing={1}>
-                            <MUITextField
-                                label='Tagline'
-                                name='tagline'
-                                placeholder='Enter tagline'
-                                value={formik.values.tagline}
-                                onChange={formik.handleChange}
-                                onBlur={formik.handleBlur}
-                                fullWidth
-                                multiline
-                                rows={4}
-                                error={formik.touched.tagline && Boolean(formik.errors.tagline)}
-                                helperText={formik.touched.tagline && formik.errors.tagline}
-                            />
-                        </Stack>
-                    </Grid>
+          <Grid item xs={12}>
+            <MUIButton
+              type="submit"
+              variant="contained"
+              color="primary"
+              label="Save changes"
+              isLoading={isLoading}
+              endIcon={<SaveFilled />}
+            />
+          </Grid>
+        </Grid>
+      </form>
 
-                    <Grid item xs={12}>
-                        <Stack spacing={1}>
-                            <MUITextField
-                                label='Description'
-                                name='description'
-                                placeholder='Enter Description'
-                                value={formik.values.description}
-                                onChange={formik.handleChange}
-                                onBlur={formik.handleBlur}
-                                fullWidth
-                                multiline
-                                rows={4}
-                                error={formik.touched.description && Boolean(formik.errors.description)}
-                                helperText={formik.touched.description && formik.errors.description}
-                            />
-                        </Stack>
-                    </Grid>
+      {/* SNACKBAR */}
+      <Snackbar open={snackbarOpen} autoHideDuration={5000} onClose={handleCloseSnackbar}>
+        <Alert onClose={handleCloseSnackbar} severity={isError ? 'error' : 'success'}>
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
+    </>
+  );
+};
 
-                    <Grid item xs={12}>
-                        <Button
-                            disableElevation
-                            // disabled={isSubmitting}
-                            fullWidth
-                            size="large"
-                            type="submit"
-                            variant="contained"
-                            color="primary"
-                        >
-                            Submit
-                        </Button>
-                    </Grid>
-                </Grid>
-            </form >
-            <Snackbar
-                open={openSnackbar}
-                autoHideDuration={6000}
-                onClose={handleCloseSnackbar}
-                anchorOrigin={{ vertical: 'top', horizontal: 'right' }} // Position Snackbar
-                sx={{ width: 'auto' }} // Adjust width if needed
-            >
-                <Alert
-                    onClose={handleCloseSnackbar}
-                    severity="success"
-                    sx={{ fontSize: '1rem', padding: '1rem' }} // Make Alert text larger
-                >
-                    Form submitted successfully!
-                </Alert>
-            </Snackbar>
-        </>
-    )
-}
-
-export default Form
+export default Form;

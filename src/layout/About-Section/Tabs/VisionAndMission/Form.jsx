@@ -1,141 +1,123 @@
-import { useState, useRef } from 'react';
-
+import { useState } from 'react';
 import { useFormik } from 'formik';
-import * as Yup from 'yup';
-
-import { Grid, Stack, Button, Snackbar, Alert } from '@mui/material'
-
-import MUITextField from 'components/common/MUITextField'
-
-const validationSchema = Yup.object({
-    vision: Yup.string(),
-    mission: Yup.string(),
-});
+import { Grid, Stack, Snackbar, Alert } from '@mui/material';
+import MUITextField from 'components/common/MUITextField';
+import { SaveFilled } from '@ant-design/icons';
+import MUIButton from 'components/common/MUIButton';
+import useMissionVisionHook from 'hooks/MissionVisionHook';
+import { useCustomMutation } from 'services/customMutation';
 
 const Form = () => {
+  // STATES
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
 
-    const [openSnackbar, setOpenSnackbar] = useState(false);
+  // HOOKS
+  const { createMissionVision, initialValues, setInitialValues, validationSchema } = useMissionVisionHook();
 
-    const formik = useFormik({
-        initialValues: {
-            vision: '',
-            mission: '',
-        },
-        validationSchema: validationSchema,
+  // FORMIK SETUP
+  const formik = useFormik({
+    initialValues,
+    validationSchema,
+    onSubmit: (values) => {
+      const formData = new FormData();
 
-        onSubmit: (values, { resetForm }) => {
-            const formData = new FormData();
-            formData.append('vision', values.vision);
-            formData.append('mission', values.mission);
+      formData.append('mission', values.mission);
+      formData.append('vision', values.vision);
 
-            // Log FormData contents
-            for (let [key, value] of formData.entries()) {
-                if (value instanceof File) {
-                    console.log(`${key}: ${value.name}`); // For files, log file name
-                } else {
-                    console.log(`${key}: ${value}`); // For other values
-                }
-            }
+      missionVisionMutation(formData);
+    },
+    validateOnChange: true,
+    enableReinitialize: true
+  });
 
-            // Example: Send the formData to a server
-            // fetch('/your-api-endpoint', {
-            //   method: 'POST',
-            //   body: formData,
-            // });
+  const {
+    mutate: missionVisionMutation,
+    isLoading,
+    isError
+  } = useCustomMutation(
+    createMissionVision,
+    ['mission_vision'],
+    () => {
+      setSnackbarMessage('Mission and vision updated successfully!');
+      setSnackbarOpen(true);
+    },
+    (error) => {
+      const message =
+        error.status === 404 ? 'Something went wrong. Please contact developer.' : error.response.data.message || 'An error occurred';
+      setSnackbarMessage(message);
+      setSnackbarOpen(true);
+    }
+  );
 
-            // Simulate form submission
-            setTimeout(() => {
-                console.log('Form data submitted:', formData);
-                resetForm(); // Reset form fields
-                setOpenSnackbar(true); // Show success Snackbar
-            }, 500);
+  const handleChangeInput = (e) => {
+    const { name, value } = e.target;
+    setInitialValues(name, value);
+  };
 
-        },
+  const handleCloseSnackbar = () => setSnackbarOpen(false);
 
-    });
+  return (
+    <>
+      <form onSubmit={formik.handleSubmit}>
+        <Grid container spacing={3} direction="column">
+          <Grid item xs={12}>
+            <Stack spacing={1}>
+              <MUITextField
+                label="Mission"
+                name="mission"
+                placeholder="Enter Mission"
+                value={formik.values.mission}
+                onChange={handleChangeInput}
+                onBlur={formik.handleBlur}
+                fullWidth
+                multiline
+                rows={6}
+                error={formik.touched.mission && Boolean(formik.errors.mission)}
+                helperText={formik.touched.mission && formik.errors.mission}
+              />
+            </Stack>
+          </Grid>
 
-    const handleCloseSnackbar = () => {
-        setOpenSnackbar(false);
-    };
+          <Grid item xs={12}>
+            <Stack spacing={1}>
+              <MUITextField
+                label="Vision"
+                name="vision"
+                placeholder="Enter Vision"
+                value={formik.values.vision}
+                onChange={handleChangeInput}
+                onBlur={formik.handleBlur}
+                fullWidth
+                multiline
+                rows={4}
+                error={formik.touched.vision && Boolean(formik.errors.vision)}
+                helperText={formik.touched.vision && formik.errors.vision}
+              />
+            </Stack>
+          </Grid>
 
-    return (
-        <>
-            <form onSubmit={formik.handleSubmit}>
-                <Grid
-                    container
-                    spacing={3}
-                    direction='column'
-                >
+          <Grid item xs={12}>
+            <MUIButton
+              type="submit"
+              variant="contained"
+              color="primary"
+              label="Save changes"
+              isLoading={isLoading}
+              endIcon={<SaveFilled />}
+            />
+          </Grid>
+        </Grid>
+      </form>
 
-                    <Grid item xs={12}>
-                        <Stack spacing={1}>
-                            <MUITextField
-                                label='Vision'
-                                name='vision'
-                                placeholder='Enter Vision'
-                                value={formik.values.vision}
-                                onChange={formik.handleChange}
-                                onBlur={formik.handleBlur}
-                                fullWidth
-                                multiline
-                                rows={4}
-                                error={formik.touched.vision && Boolean(formik.errors.vision)}
-                                helperText={formik.touched.vision && formik.errors.vision}
-                            />
-                        </Stack>
-                    </Grid>
+      {/* SNACKBAR */}
+      <Snackbar open={snackbarOpen} autoHideDuration={5000} onClose={handleCloseSnackbar}>
+        <Alert onClose={handleCloseSnackbar} severity={isError ? 'error' : 'success'}>
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
+    </>
+  );
+};
 
-                    <Grid item xs={12}>
-                        <Stack spacing={1}>
-                            <MUITextField
-                                label='Mission'
-                                name='mission'
-                                placeholder='Enter Mission'
-                                value={formik.values.mission}
-                                onChange={formik.handleChange}
-                                onBlur={formik.handleBlur}
-                                fullWidth
-                                multiline
-                                rows={4}
-                                error={formik.touched.mission && Boolean(formik.errors.mission)}
-                                helperText={formik.touched.mission && formik.errors.mission}
-                            />
-                        </Stack>
-                    </Grid>
-
-                    <Grid item xs={12}>
-                        <Button
-                            disableElevation
-                            // disabled={isSubmitting}
-                            fullWidth
-                            size="large"
-                            type="submit"
-                            variant="contained"
-                            color="primary"
-                        >
-                            Submit
-                        </Button>
-                    </Grid>
-                </Grid>
-            </form >
-
-            <Snackbar
-                open={openSnackbar}
-                autoHideDuration={6000}
-                onClose={handleCloseSnackbar}
-                anchorOrigin={{ vertical: 'top', horizontal: 'right' }} // Position Snackbar
-                sx={{ width: 'auto' }} // Adjust width if needed
-            >
-                <Alert
-                    onClose={handleCloseSnackbar}
-                    severity="success"
-                    sx={{ fontSize: '1rem', padding: '1rem' }} // Make Alert text larger
-                >
-                    Form submitted successfully!
-                </Alert>
-            </Snackbar>
-        </>
-    )
-}
-
-export default Form
+export default Form;

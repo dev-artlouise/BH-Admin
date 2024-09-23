@@ -15,10 +15,10 @@ import {
 import MainCard from 'components/MainCard';
 import { useQuery } from 'react-query';
 import { deleteCompany } from 'services/companiesServices';
-import CompanyCardComponent from 'components/cards/company/CompanyCardComponent';
 import { useCustomMutation } from 'services/customMutation';
 import { LoadingButton } from '@mui/lab';
 import useCompanyHook from 'hooks/CompanyHook';
+import MUICard from 'components/common/MUICard';
 
 const CompanyContent = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -96,7 +96,7 @@ const CompanyContent = () => {
           ) : companies.length > 0 ? (
             companies.map(({ id, name, urlimage }, key) => (
               <Grid item xs={4} key={key}>
-                <CompanyCardComponent title={name} url={urlimage} onDelete={() => handleDelete(id)} onEdit={() => handleEdit(id)} />
+                <MUICard title={name} url={urlimage} onDelete={() => handleDelete(id)} onEdit={() => handleEdit(id)} />
               </Grid>
             ))
           ) : (
@@ -107,23 +107,23 @@ const CompanyContent = () => {
             </Grid>
           )}
         </Grid>
-
-        {/* Confirmation dialog for deletion */}
-        <Dialog open={dialogOpen} onClose={handleCancelDelete}>
-          <DialogTitle>Confirm Deletion</DialogTitle>
-          <DialogContent>
-            <DialogContentText>Are you sure you want to delete this company?</DialogContentText>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={handleCancelDelete} color="primary">
-              Cancel
-            </Button>
-            <LoadingButton onClick={handleConfirmDelete} color="error" loading={isLoadingDelete} variant="contained">
-              Delete
-            </LoadingButton>
-          </DialogActions>
-        </Dialog>
       </MainCard>
+
+      {/* Confirmation dialog for deletion */}
+      <Dialog open={dialogOpen} onClose={handleCancelDelete}>
+        <DialogTitle>Confirm Deletion</DialogTitle>
+        <DialogContent>
+          <DialogContentText>Are you sure you want to delete this company?</DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCancelDelete} color="primary">
+            Cancel
+          </Button>
+          <LoadingButton onClick={handleConfirmDelete} color="error" loading={isLoadingDelete} variant="contained">
+            Delete
+          </LoadingButton>
+        </DialogActions>
+      </Dialog>
 
       {/* Snackbar notification for success or error messages */}
       <Snackbar open={snackbarOpen} autoHideDuration={4000} onClose={handleCloseSnackbar}>

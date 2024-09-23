@@ -4,7 +4,7 @@ import { Card, CardActions, CardMedia, CardContent, Typography, IconButton, Divi
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import { grey } from '@ant-design/colors';
 
-const CompanyCardComponent = ({ title, url, subtitle, onEdit, onDelete, width, height }) => {
+const MUICard = ({ title, url, subtitle, onEdit, onDelete, width, height }) => {
   return (
     <Card sx={{ width: width, height: height }}>
       <CardMedia component="img" height="140" image={url} alt={title} />
@@ -35,7 +35,7 @@ const CompanyCardComponent = ({ title, url, subtitle, onEdit, onDelete, width, h
 };
 
 // Define prop types
-CompanyCardComponent.propTypes = {
+MUICard.propTypes = {
   title: PropTypes.string,
   url: PropTypes.string,
   subtitle: PropTypes.string,
@@ -45,4 +45,4 @@ CompanyCardComponent.propTypes = {
   height: PropTypes.oneOf([PropTypes.string, PropTypes.number])
 };
 
-export default CompanyCardComponent;
+export default MUICard;

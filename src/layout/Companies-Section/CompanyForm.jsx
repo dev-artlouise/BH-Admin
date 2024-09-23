@@ -5,7 +5,7 @@ import MUITextField from 'components/common/MUITextField';
 import MUIButton from 'components/common/MUIButton';
 import { useCustomMutation } from 'services/customMutation';
 import { companyStyles } from 'styles/companyStyles';
-import { ArrowCircleRightOutlined, CancelOutlined, CloudUploadOutlined } from '@mui/icons-material';
+import { ArrowCircleRightOutlined, CloudUploadOutlined } from '@mui/icons-material';
 import { blueGrey } from '@mui/material/colors';
 import useCompanyHook from 'hooks/CompanyHook';
 import useFileHandler from 'utils/useFileHandler';

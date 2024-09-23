@@ -1,50 +1,46 @@
-import { Typography, InputLabel } from '@mui/material'
-import MainCard from 'components/MainCard'
+import { Typography, Box, Stack, Divider } from '@mui/material';
+import MainCard from 'components/MainCard';
+import useMissionVisionHook from 'hooks/MissionVisionHook';
+import { useQuery } from 'react-query';
 
 const Content = () => {
-    return (
-        <MainCard
-            Title='Current Hero Section'
-        >
-            <Typography
-                variant='h4'
-                gutterBottom
-            >
-                Vision
-            </Typography>
+  // Hook for managing company data and state
+  const { getMissionVision } = useMissionVisionHook();
 
+  // Query to fetch the list of companies
+  const {
+    data: { data: mission_vision } = {}
+    // isLoading
+  } = useQuery('mission_vision', getMissionVision, { refetchOnWindowFocus: false });
 
-            <Typography
-                variant="body1"
-                gutterBottom
-            >
-                Lorem ipsum dolor sit amen, consenter nipissing eli, sed do elusion tempos incident ut laborers et doolie magna alissa. Ut enif ad
-                minim venice, quin nostrum exercitation illampu laborings nisi ut liquid ex ea commons construal. Duos aube grue dolor in
-                reprehended in voltage veil esse colum doolie eu fujian bulla parian. Exceptive sin ocean cuspidate non president, sunk in culpa qui
-                officiate descent molls anim id est labours.
-            </Typography>
+  return (
+    <MainCard title="Vision and Mission Preview" darkTitle>
+      <Stack gap={3}>
+        {/* MISSION */}
+        <Box>
+          <Typography variant="h5" fontWeight="700" textTransform="uppercase" textAlign="center" gutterBottom>
+            Our Mission
+          </Typography>
 
-            <Typography
-                variant='h4'
-                gutterBottom
-            >
-                Mission
-            </Typography>
+          <Typography variant="body1" textAlign="center" gutterBottom>
+            {mission_vision?.mission}
+          </Typography>
+        </Box>
 
-            <Typography
-                variant="body1"
-                gutterBottom
-            >
-                Lorem ipsum dolor sit amen, consenter nipissing eli, sed do elusion tempos incident ut laborers et doolie magna alissa. Ut enif ad
-                minim venice, quin nostrum exercitation illampu laborings nisi ut liquid ex ea commons construal. Duos aube grue dolor in
-                reprehended in voltage veil esse colum doolie eu fujian bulla parian. Exceptive sin ocean cuspidate non president, sunk in culpa qui
-                officiate descent molls anim id est labours.
-            </Typography>
+        <Divider />
+        {/* VISION */}
+        <Box>
+          <Typography variant="h5" fontWeight="700" textTransform="uppercase" textAlign="center" gutterBottom>
+            Our Vision
+          </Typography>
 
+          <Typography variant="body1" textAlign="center" gutterBottom>
+            {mission_vision?.vision}
+          </Typography>
+        </Box>
+      </Stack>
+    </MainCard>
+  );
+};
 
-
-        </MainCard>
-    )
-}
-
-export default Content
+export default Content;

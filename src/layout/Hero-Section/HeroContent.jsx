@@ -1,31 +1,30 @@
-import { Typography, InputLabel } from '@mui/material'
-import MainCard from 'components/MainCard'
+import { Typography } from '@mui/material';
+import MainCard from 'components/MainCard';
+import useHeroHook from 'hooks/HeroHook';
+import { useQuery } from 'react-query';
 
 const HeroContent = () => {
-    return (
-        <MainCard
-            Title='Current Hero Section'
-        >
-            <Typography
-                variant='h4'
-                gutterBottom
-            >Title
-            </Typography>
+  // Hook for managing company data and state
+  const { getHeroes } = useHeroHook();
 
-            <Typography
-                variant="body1"
-                gutterBottom
-            >
-                Lorem ipsum dolor sit amen, consenter nipissing eli, sed do elusion tempos incident ut laborers et doolie magna alissa. Ut enif ad
-                minim venice, quin nostrum exercitation illampu laborings nisi ut liquid ex ea commons construal. Duos aube grue dolor in
-                reprehended in voltage veil esse colum doolie eu fujian bulla parian. Exceptive sin ocean cuspidate non president, sunk in culpa qui
-                officiate descent molls anim id est labours.
-            </Typography>
+  // Query to fetch the list of companies
+  const {
+    data: { data: hero = {} } = {}
+    // isLoading
+  } = useQuery('hero', getHeroes, { refetchOnWindowFocus: false });
 
-            IMAGE SECTION HERE
+  return (
+    <MainCard title="Current Hero Section" darkTitle>
+      <Typography variant="h4" gutterBottom>
+        {hero?.title}
+      </Typography>
+      <Typography variant="body1" gutterBottom>
+        {hero?.content}
+      </Typography>
 
-        </MainCard>
-    )
-}
+      {hero?.image && <img src={hero?.image} alt="Preview" width={'auto'} height={320} />}
+    </MainCard>
+  );
+};
 
-export default HeroContent
+export default HeroContent;
