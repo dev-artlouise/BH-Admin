@@ -3,22 +3,15 @@ import { API_BASE_URL } from 'services/API';
 import { create } from 'zustand';
 import * as Yup from 'yup';
 
-const PATH = 'companies';
-const SINGULAR_PATH = 'company';
+const PATH = 'hero-section';
+const SINGULAR_PATH = 'hero-section';
 
-const useCompanyHook = create((set) => ({
+const useProcessHook = create((set) => ({
   isUpdateMode: false,
-  initialValues: { name: '', urlimage: null },
+  initialValues: { title: '', content: '' },
   validationSchema: Yup.object({
-    name: Yup.string().required('Company name is required'),
-    urlimage: Yup.mixed()
-      .required('Image file is required') // Check if image file is not null
-      .test('fileSize', 'The file is too large', (value) => {
-        return value && value.size <= 2048 * 1024; // Max is 2MB in bytes [can be adjusted in the server]
-      })
-      .test('fileFormat', 'Unsupported File Format', (value) => {
-        return value && ['image/jpeg', 'image/png', 'image/svg'].includes(value.type); // Validate file type || only JPEG and PNG files are supported
-      })
+    title: Yup.string().required('Title is required'),
+    content: Yup.string().required('This field is required')
   }),
 
   setInitialValues: (field, value) =>
@@ -31,26 +24,26 @@ const useCompanyHook = create((set) => ({
 
   resetInitialValues: () => {
     set(() => ({
-      initialValues: { name: '', urlimage: null }
+      initialValues: { title: '', content: '' }
     }));
   },
 
   // SWITCH UPDATE MODE
   setUpdateMode: (value) => set({ isUpdateMode: value }),
 
-  // GET COMPANIES
-  getCompanies: async () => {
+  // GET PROCESSES
+  getProcesses: async () => {
     try {
       const response = await axios.get(`${API_BASE_URL}/${PATH}`);
 
       return response.data;
     } catch (error) {
-      throw new Error('Failed to fetch companies: ' + error.message);
+      throw new Error('Failed to fetch processses: ' + error.message);
     }
   },
 
-  // GET COMPANY
-  getCompany: async (id) => {
+  // GET PROCESSES
+  getProcess: async (id) => {
     try {
       const response = await axios.get(`${API_BASE_URL}/${SINGULAR_PATH}/${id}`);
       set(() => ({
@@ -62,23 +55,23 @@ const useCompanyHook = create((set) => ({
     }
   },
 
-  // CREATE COMPANY
-  createCompany: async (formData) => {
+  // CREATE PROCESSES
+  createProcess: async (formData) => {
     const response = await axios.post(`${API_BASE_URL}/${PATH}`, formData);
     return response.data;
   },
 
-  // DELETE COMPANY
-  deleteCompany: async (id) => {
+  // DELETE PROCESSES
+  deleteProcess: async (id) => {
     const response = await axios.delete(`${API_BASE_URL}/${PATH}/${id}`);
     return response.data;
   },
 
-  // UPDATE COMPANY
-  updateCompany: async (id) => {
+  // UPDATE PROCESSES
+  updateProcess: async (id) => {
     const response = await axios.put(`${API_BASE_URL}/${SINGULAR_PATH}/${id}`);
     set(() => ({
-      initialValues: { name: '', imageurl: null },
+      initialValues: { title: '', content: '', image: null },
       isUpdateMode: false
     }));
 
@@ -86,4 +79,4 @@ const useCompanyHook = create((set) => ({
   }
 }));
 
-export default useCompanyHook;
+export default useProcessHook;
