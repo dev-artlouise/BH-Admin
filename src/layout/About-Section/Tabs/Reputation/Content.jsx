@@ -1,45 +1,53 @@
-import { Typography, InputLabel } from '@mui/material'
-import MainCard from 'components/MainCard'
+import { Typography, Box, Grid } from '@mui/material';
+import MainCard from 'components/MainCard';
+import useReputationHook from 'hooks/ReputationHook';
+import { useQuery } from 'react-query';
 
 const Content = () => {
-    return (
-        <MainCard
-            Title='Current Hero Section'
-        >
+  // Hook for managing company data and state
+  const { getReputation } = useReputationHook();
 
-            <Typography
-                variant='h6'
-                gutterBottom
-            >
-                Current Reputation Content
+  // Query to fetch the list of companies
+  const {
+    data: { data: reputation } = {}
+    // isLoading
+  } = useQuery('reputations', getReputation, { refetchOnWindowFocus: false });
+
+  return (
+    <MainCard title="Reputation Section Preview" darkTitle>
+      <Grid container mt={2}>
+        {/* YEARS */}
+        <Grid item xs={12} sm={4}>
+          <Box display="flex" flexDirection="column" justifyContent="center" alignItems="center" height="100%">
+            <Typography variant="h2">{reputation?.year_in_business}</Typography>
+            <Typography variant="body1" mb={2}>
+              Years in Business
             </Typography>
+          </Box>
+        </Grid>
 
-            <Typography
-                variant='h4'
-                gutterBottom
-            >
-                WE ARE BROADHEADERS
+        {/* YEARS */}
+        <Grid item xs={12} sm={4}>
+          <Box display="flex" flexDirection="column" justifyContent="center" alignItems="center" height="100%">
+            <Typography variant="h2">{reputation?.project_delivered}+</Typography>
+            <Typography variant="body1" mb={2}>
+              Project Delivered
             </Typography>
+          </Box>
+        </Grid>
 
-            <Typography
-                variant="h2"
-                gutterBottom
-            >
-                We bring your ideas to life and build products people love
+        {/* SATISFIED */}
+        <Grid item xs={12} sm={4}>
+          <Box display="flex" flexDirection="column" justifyContent="center" alignItems="center" height="100%">
+            <Typography variant="h2">{reputation?.satisfied_customer}%</Typography>
+            <Typography variant="body1" mb={2}>
+              Satisfied Customer
             </Typography>
+          </Box>
+        </Grid>
+      </Grid>
+    </MainCard>
+  );
+};
 
-            <Typography
-                variant="body1"
-                gutterBottom
-            >
-                Lorem ipsum dolor sit amen, consenter nipissing eli, sed do elusion tempos incident ut laborers et doolie magna alissa. Ut enif ad
-                minim venice, quin nostrum exercitation illampu laborings nisi ut liquid ex ea commons construal. Duos aube grue dolor in
-                reprehended in voltage veil esse colum doolie eu fujian bulla parian. Exceptive sin ocean cuspidate non president, sunk in culpa qui
-                officiate descent molls anim id est labours.
-            </Typography>
-
-        </MainCard>
-    )
-}
-
-export default Content
+export default Content;

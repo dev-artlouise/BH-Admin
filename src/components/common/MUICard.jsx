@@ -4,9 +4,9 @@ import { Card, CardActions, CardMedia, CardContent, Typography, IconButton, Divi
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import { grey } from '@ant-design/colors';
 
-const CompanyCardComponent = ({ title, url, subtitle, onEdit, onDelete, width }) => {
+const MUICard = ({ title, url, subtitle, onEdit, onDelete, width, height }) => {
   return (
-    <Card sx={{ width: width }}>
+    <Card sx={{ width: width, height: height }}>
       <CardMedia component="img" height="140" image={url} alt={title} />
       <CardContent>
         <small style={{ fontSize: 10, color: grey[50] }}>COMPANY:</small>
@@ -35,13 +35,14 @@ const CompanyCardComponent = ({ title, url, subtitle, onEdit, onDelete, width })
 };
 
 // Define prop types
-CompanyCardComponent.propTypes = {
+MUICard.propTypes = {
   title: PropTypes.string,
   url: PropTypes.string,
   subtitle: PropTypes.string,
   onEdit: PropTypes.func,
   onDelete: PropTypes.func,
-  width: PropTypes.oneOf([PropTypes.string, PropTypes.number])
+  width: PropTypes.oneOf([PropTypes.string, PropTypes.number]),
+  height: PropTypes.oneOf([PropTypes.string, PropTypes.number])
 };
 
-export default CompanyCardComponent;
+export default MUICard;

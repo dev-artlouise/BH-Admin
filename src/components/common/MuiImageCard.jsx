@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card, CardMedia, CardContent, Typography, IconButton } from '@mui/material';
-
 import { DeleteOutlined } from '@ant-design/icons';
+import PropTypes from 'prop-types';
 
 const MUIImageCard = ({ imageSrc, title, onDelete }) => {
   return (
@@ -18,4 +18,9 @@ const MUIImageCard = ({ imageSrc, title, onDelete }) => {
   );
 };
 
+MUIImageCard.propTypes = {
+  imageSrc: PropTypes.string,
+  title: PropTypes.string,
+  onDelete: PropTypes.func
+};
 export default MUIImageCard;
