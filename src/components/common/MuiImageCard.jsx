@@ -1,6 +1,5 @@
 import React from 'react';
 import { Card, CardMedia, CardContent, Typography, IconButton } from '@mui/material';
-import ClearIcon from '@mui/icons-material/Clear';
 
 import { DeleteOutlined } from '@ant-design/icons';
 

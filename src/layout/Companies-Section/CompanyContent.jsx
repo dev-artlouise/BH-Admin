@@ -20,15 +20,16 @@ import { deleteCompany } from 'services/companiesServices';
 import CompanyCardComponent from 'components/cards/company/CompanyCardComponent';
 import { useCustomMutation } from 'services/customMutation';
 import { LoadingButton } from '@mui/lab';
+
 import useCompanyHook from 'hooks/CompanyHook';
 
 const CompanyContent = () => {
+  const { getCompanies } = useCompanyHook();
+
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedCompanyId, setSelectedCompanyId] = useState(null);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
-
-  // const { data: companies, isLoading } = useQuery('companies', getCompanies);
 
   const { data: companies = [], isLoading } = useQuery('companies', getCompanies, {
     refetchOnWindowFocus: false //remove refetch if interact on screen
@@ -84,11 +85,7 @@ const CompanyContent = () => {
 
   return (
     <Fragment>
-      <MainCard
-        title="Current Company Section"
-        darkTitle
-        contentSX={{ maxHeight: 450, overflowY: 'auto' }}
-      >
+      <MainCard title="Current Company Section" darkTitle contentSX={{ maxHeight: 450, overflowY: 'auto' }}>
         <Grid container spacing={3}>
           {/* loop the company images here with companies api */}
 
