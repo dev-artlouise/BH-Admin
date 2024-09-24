@@ -1,77 +1,91 @@
-import { Fragment, useEffect } from 'react';
-import { Typography, Skeleton } from '@mui/material';
+import { Typography, Skeleton, Grid, Container, Box } from '@mui/material';
 import MainCard from 'components/MainCard';
 import { useQuery } from 'react-query';
 import { getHeroContent } from 'services/heroServices';
 
 const HeroContent = () => {
     // Fetch hero content using react-query
-    const { data: heroContent = [], isLoading, isFetching } = useQuery('hero', getHeroContent, {
+    const { data: heroContent, isLoading, isFetching } = useQuery('hero', getHeroContent, {
         refetchOnWindowFocus: false // Prevent refetch on window focus
     });
 
-    // Check the structure of heroContent to determine how to access the data
-    // const heroContentData = heroContent?.data || heroContent;
+    const { title, image, content } = heroContent?.data || {};
 
-    useEffect(() => {
-        // Log the content data after it is fetched
-        if (heroContent) {
-            console.log(heroContentlength); // Log only when data is available
-        }
-    }, [heroContent]); // Add heroContentData as a dependency to trigger on change
+    // Define common styles
+    const commonTextAlign = { xs: 'center', md: 'left', lg: 'left' };
+    const commonFontSize = { xs: '38px', sm: '42px', md: '50px', lg: '60px' };
 
     return (
-        <>
-            <MainCard
-                title="Current Hero Section"
-                darkTitle
-                contentSX={{ maxHeight: 450, overflowY: 'auto' }}
-            >
-                {/* Display loading skeletons if still loading or fetching */}
-                {isLoading || isFetching ? (
-                    <Fragment>
-                        <Skeleton
-                            width="50%"
-                            height={50}
-                            sx={{ marginBottom: '1rem' }}
-                        />
-                        <Skeleton
-                            variant="rectangular"
-                            height={140}
-                            sx={{ marginBottom: '1rem' }}
-                        />
-                        <Skeleton width="100%" />
-                    </Fragment>
-                ) : heroContent && heroContent.length > 0 ? (
-                    // Display content when fetched
-                    heroContent?.data.map(({ title, image, content }, index) => (
-                        <Fragment key={index}>
-                            <Typography variant="h4" gutterBottom>
-                                {title}
-                            </Typography>
+        <MainCard title="Current Hero Section" darkTitle contentSX={{ maxHeight: 450, overflowY: 'auto' }}>
+            {/* Display loading skeletons if still loading or fetching */}
+            {isLoading || isFetching ? (
+                <>
+                    <Skeleton width="50%" height={50} sx={{ marginBottom: '1rem' }} />
+                    <Skeleton variant="rectangular" height={140} sx={{ marginBottom: '1rem' }} />
+                    <Skeleton width="100%" />
+                </>
+            ) : heroContent?.data ? (
+                <Container>
+                    <Box>
+                        <Grid container spacing={2} alignItems="center" justifyContent="center">
+                            <Grid item xs={12} md={6}>
+                                <Box sx={{ marginBottom: '16px' }}>
+                                    <Typography
+                                        variant="h2"
+                                        component="h2"
+                                        sx={{
+                                            fontWeight: '700',
+                                            textAlign: commonTextAlign,
+                                            fontSize: commonFontSize,
+                                        }}
+                                    >
+                                        {title}
+                                    </Typography>
+                                </Box>
 
-                            {/* IMAGE SECTION PLACEHOLDER */}
-                            <div>
-                                <img
-                                    src={image || 'https://via.placeholder.com/150'}
-                                    alt="Hero section"
-                                    style={{ width: '100%', height: 'auto' }}
-                                />
-                            </div>
+                                <Box sx={{ marginBottom: '24px' }}>
+                                    <Typography
+                                        variant="body1"
+                                        component="p"
+                                        color="#565973"
+                                        lineHeight="1.6"
+                                        sx={{
+                                            fontWeight: '500',
+                                            textAlign: commonTextAlign,
+                                            fontSize: { xs: '18px', lg: '20px' },
+                                        }}
+                                    >
+                                        {content}
+                                    </Typography>
+                                </Box>
+                            </Grid>
 
-                            <Typography variant="body1" gutterBottom>
-                                {content}
-                            </Typography>
-                        </Fragment>
-                    ))
-                ) : (
-                    // Display 'No Hero Content Available' only if not loading and no data is available
-                    <Typography variant="body1" align="center">
-                        No Hero Content Available
-                    </Typography>
-                )}
-            </MainCard>
-        </>
+                            <Grid item xs={12} md={6} sx={{ paddingLeft: '32px', paddingTop: '32px' }}>
+                                <Box
+                                    sx={{
+                                        display: 'flex',
+                                        height: '100%',
+                                        width: '100%',
+                                        justifyContent: 'center',
+                                        alignItems: 'center',
+                                    }}
+                                >
+                                    <img
+                                        src={image || 'https://via.placeholder.com/150'}
+                                        alt="Hero section"
+                                        style={{ width: '100%', height: 'auto' }}
+                                    />
+                                </Box>
+                            </Grid>
+                        </Grid>
+                    </Box>
+                </Container>
+            ) : (
+                <Typography variant="body1" align="center">
+                    No Hero Content Available
+                </Typography>
+            )}
+        </MainCard>
     );
 };
 
