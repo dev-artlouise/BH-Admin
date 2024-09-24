@@ -18,7 +18,7 @@ const useServiceHook = create((set) => ({
         return value && value.size <= 2048 * 1024; // Max is 2MB in bytes [can be adjusted in the server]
       })
       .test('fileFormat', 'Unsupported File Format', (value) => {
-        return value && ['image/jpeg', 'image/png'].includes(value.type); // Validate file type || only JPEG and PNG files are supported
+        return value && ['image/jpeg', 'image/png', 'image/svg+xml'].includes(value.type); // Validate file type || only JPEG and PNG files are supported
       })
   }),
 
