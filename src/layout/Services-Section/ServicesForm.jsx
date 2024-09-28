@@ -31,7 +31,7 @@ const ServicesForm = () => {
       const formData = new FormData();
       formData.append('title', values.serviceTitle);
       formData.append('content', values.serviceContent);
-      formData.append('logo_url', values.serviceLogo);
+      // formData.append('logo_url', values.serviceLogo);
 
       serviceMutation(formData);
     },
@@ -111,7 +111,7 @@ const ServicesForm = () => {
               helperText={formik.touched.serviceContent && formik.errors.serviceContent}
             />
           </Stack>
-          <Stack spacing={1} mt={2}>
+          {/* <Stack spacing={1} mt={2}>
             <FormLabel>Upload the logo</FormLabel>
             <div
               style={{
@@ -133,7 +133,7 @@ const ServicesForm = () => {
             <FormHelperText>
               {formik.touched.serviceLogo && formik.errors.serviceLogo && <div style={{ color: 'red' }}>{formik.errors.serviceLogo}</div>}
             </FormHelperText>
-          </Stack>
+          </Stack> */}
         </Grid>
 
         <Grid item xs={12} gap={2}>
