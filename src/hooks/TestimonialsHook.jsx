@@ -35,7 +35,6 @@ const useTestimonialsHook = create((set, get) => ({
   // SWITCH UPDATE MODE
   setUpdateMode: (value) => set({ isUpdateMode: value }),
 
-  // SERVICE CONTENT
   setInitialValues: (field, value) =>
     set((state) => ({
       initialValues: {
@@ -50,7 +49,6 @@ const useTestimonialsHook = create((set, get) => ({
     }));
   },
 
-  // CONTENT SECTION
   getContent: async () => {
     try {
       const response = await axios.get(`${API_BASE_URL}/${PATH}`);
@@ -73,7 +71,6 @@ const useTestimonialsHook = create((set, get) => ({
     return response.data;
   },
 
-  // LIST SECTION
   setInitialValuesList: (field, value) =>
     set((state) => ({
       initialValuesList: {
@@ -101,10 +98,18 @@ const useTestimonialsHook = create((set, get) => ({
   getList: async (id) => {
     try {
       const response = await axios.get(`${API_BASE_URL}/${LIST}/${id}`);
-      // set(() => ({
-      //   initialValues: { ...response.data, urlimageold: response.data.urlimage },
-      //   isUpdateMode: true
-      // }));
+      const { fullname, position, comment } = response.data.data;
+
+      set(() => ({
+        initialValuesList: {
+          id: id,
+          fullname: fullname,
+          position: position,
+          comment: comment,
+          image_url: ''
+        },
+        isUpdateMode: true
+      }));
 
       return response.data;
     } catch (error) {

@@ -26,13 +26,13 @@ const List = () => {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
 
-  // Hook for managing company data and state
-  const { getLists, deleteList } = useWhyUsHook();
+  // Hook for managing data and state
+  const { getLists, getList, deleteList } = useWhyUsHook();
 
-  // Query to fetch the list of companies
+  // Query to fetch the list
   const { data: { data: lists = [] } = [], isLoading: isLoadingFetch } = useQuery('whyUsList', getLists, { refetchOnWindowFocus: false });
 
-  // Mutation hook for deleting a company
+  // Mutation hook for deleting
   const {
     mutate: deleteMutation,
     isLoading: isLoadingDelete,
@@ -54,7 +54,7 @@ const List = () => {
 
   // Open the confirmation dialog for deletion
   const handleDelete = (id) => {
-    setSelectedId(id); // Set the ID of the company to delete
+    setSelectedId(id); // Set the ID
     setDialogOpen(true); // Show the confirmation dialog
   };
 
@@ -73,10 +73,10 @@ const List = () => {
     setSnackbarOpen(false);
   };
 
-  // Handle click to edit a company
-  //   const handleEdit = () => {
-  //
-  //   };
+  // Handle click to edit
+  const handleEdit = (id) => {
+    getList(id);
+  };
 
   return (
     <Fragment>
@@ -95,7 +95,7 @@ const List = () => {
           ) : lists.length > 0 ? (
             lists.map(({ id, title, content, logo_url }, key) => (
               <Grid item xs={6} key={key}>
-                <MUICard title={title} subtitle={content} url={logo_url} onDelete={() => handleDelete(id)} />
+                <MUICard title={title} subtitle={content} url={logo_url} onDelete={() => handleDelete(id)} onEdit={() => handleEdit(id)} />
               </Grid>
             ))
           ) : (

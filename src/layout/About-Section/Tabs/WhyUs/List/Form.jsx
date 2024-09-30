@@ -16,8 +16,16 @@ const Form = () => {
   const [snackbarMessage, setSnackbarMessage] = useState('');
 
   // HOOKS
-  const { createList, initialValuesList, setUpdateMode, isUpdateMode, setInitialValuesList, resetInitialValuesList, validationSchemaList } =
-    useWhyUsHook();
+  const {
+    createList,
+    updateList,
+    initialValuesList,
+    setUpdateMode,
+    isUpdateMode,
+    setInitialValuesList,
+    resetInitialValuesList,
+    validationSchemaList
+  } = useWhyUsHook();
   const { handleFileChange, clearFile } = useFileHandler(fileInputRef, initialValuesList.logo_url, setInitialValuesList, 'logo_url');
 
   // FORMIK SETUP
@@ -28,9 +36,10 @@ const Form = () => {
       const formData = new FormData();
       formData.append('title', values?.title);
       formData.append('content', values?.content);
-      formData.append('logo_url', values?.logo_url);
+      if (values?.logo_url) formData.append('logo_url', values?.logo_url);
 
-      createMutation(formData);
+      // Call createMutation or updateList directly here
+      createMutation({ id: isUpdateMode ? initialValuesList.id : undefined, formData });
     },
     validateOnChange: true,
     enableReinitialize: true
@@ -41,7 +50,7 @@ const Form = () => {
     isLoading,
     isError
   } = useCustomMutation(
-    createList,
+    ({ id, formData }) => (isUpdateMode ? updateList(id, formData) : createList(formData)),
     ['whyUsList'],
     () => {
       setSnackbarMessage('Record submitted successfully!');

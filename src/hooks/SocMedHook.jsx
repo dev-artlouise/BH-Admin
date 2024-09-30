@@ -27,7 +27,6 @@ const useSocMedHook = create((set, get) => ({
   // SWITCH UPDATE MODE
   setUpdateMode: (value) => set({ isUpdateMode: value }),
 
-  // SERVICE CONTENT
   setInitialValues: (field, value) =>
     set((state) => ({
       initialValues: {
@@ -48,21 +47,25 @@ const useSocMedHook = create((set, get) => ({
 
       return response.data;
     } catch (error) {
-      throw new Error('Failed to fetch companies: ' + error.message);
+      throw new Error('Failed to fetch data: ' + error.message);
     }
   },
 
   getList: async (id) => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/${SINGULAR_PATH}/${id}`);
-      // set(() => ({
-      //   initialValues: { ...response.data, urlimageold: response.data.urlimage },
-      //   isUpdateMode: true
-      // }));
-
+      const response = await axios.get(`${API_BASE_URL}/${PATH}/${id}`);
+      const { title } = response.data.data;
+      set(() => ({
+        initialValues: {
+          id: id,
+          title: title,
+          logo: ''
+        },
+        isUpdateMode: true
+      }));
       return response.data;
     } catch (error) {
-      throw new Error('Failed to fetch companies: ' + error.message);
+      throw new Error('Failed to fetch data: ' + error.message);
     }
   },
 

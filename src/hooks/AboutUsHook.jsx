@@ -17,7 +17,6 @@ const useAboutUsHook = create((set) => ({
   // SWITCH UPDATE MODE
   setUpdateMode: (value) => set({ isUpdateMode: value }),
 
-  // SERVICE CONTENT
   setInitialValues: (field, value) =>
     set((state) => ({
       initialValues: {
@@ -32,7 +31,6 @@ const useAboutUsHook = create((set) => ({
     }));
   },
 
-  // CONTENT SECTION
   getContent: async () => {
     try {
       const response = await axios.get(`${API_BASE_URL}/${PATH}`);

@@ -16,7 +16,6 @@ const useOurStoryHook = create((set) => ({
   // SWITCH UPDATE MODE
   setUpdateMode: (value) => set({ isUpdateMode: value }),
 
-  // SERVICE CONTENT
   setInitialValues: (field, value) =>
     set((state) => ({
       initialValues: {

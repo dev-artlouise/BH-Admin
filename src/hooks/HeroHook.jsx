@@ -58,7 +58,7 @@ const useHeroHook = create((set, get) => ({
 
       return response.data;
     } catch (error) {
-      throw new Error('Failed to fetch companies: ' + error.message);
+      throw new Error('Failed to fetch data: ' + error.message);
     }
   },
 

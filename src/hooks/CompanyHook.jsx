@@ -48,7 +48,7 @@ const useCompanyHook = create((set, get) => ({
 
       return response.data;
     } catch (error) {
-      throw new Error('Failed to fetch companies: ' + error.message);
+      throw new Error('Failed to fetch data: ' + error.message);
     }
   },
 
@@ -56,7 +56,7 @@ const useCompanyHook = create((set, get) => ({
   getList: async (id) => {
     try {
       const response = await axios.get(`${API_BASE_URL}/${PATH}/${id}`);
-      const { name } = response.data;
+      const { name } = response.data.data;
       set(() => ({
         initialValues: {
           id: id,
@@ -66,7 +66,7 @@ const useCompanyHook = create((set, get) => ({
         isUpdateMode: true
       }));
     } catch (error) {
-      throw new Error('Failed to fetch companies: ' + error.message);
+      throw new Error('Failed to fetch data: ' + error.message);
     }
   },
 

@@ -5,7 +5,7 @@ import { Fragment } from 'react';
 import { useQuery } from 'react-query';
 
 const Content = () => {
-  // Hook for managing company data and state
+  // Hook for managing  data and state
   const { getContent } = useProjectsHook();
 
   // Query to fetch the list
@@ -22,13 +22,6 @@ const Content = () => {
           {project.content}
         </Typography>
       </MainCard>
-
-      {/* Snackbar notification for success or error messages */}
-      {/* <Snackbar open={snackbarOpen} autoHideDuration={4000} onClose={handleCloseSnackbar}>
-        <Alert onClose={handleCloseSnackbar} severity={isError ? 'error' : 'success'}>
-          {snackbarMessage}
-        </Alert>
-      </Snackbar> */}
     </Fragment>
   );
 };

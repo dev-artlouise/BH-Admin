@@ -19,7 +19,6 @@ import useTestimonialsHook from 'hooks/TestimonialsHook';
 import { Fragment, useState } from 'react';
 import { useQuery } from 'react-query';
 import { useCustomMutation } from 'services/customMutation';
-import { filterArrayById } from 'utils/filterArrayByid';
 
 const ListContent = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -27,15 +26,15 @@ const ListContent = () => {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
 
-  // Hook for managing company data and state
-  const { getLists, deleteList, setInitialValuesList, setUpdateMode } = useTestimonialsHook();
+  // Hook for managing  data and state
+  const { getLists, getList, deleteList } = useTestimonialsHook();
 
-  // Query to fetch the list of companies
+  // Query to fetch the list
   const { data: { data: lists = [] } = [], isLoading: isLoadingFetch } = useQuery('testimonials', getLists, {
     refetchOnWindowFocus: false
   });
 
-  // Mutation hook for deleting a company
+  // Mutation hook for deleting
   const {
     mutate: deleteMutation,
     isLoading: isLoadingDelete,
@@ -57,7 +56,7 @@ const ListContent = () => {
 
   // Open the confirmation dialog for deletion
   const handleDelete = (id) => {
-    setSelectedId(id); // Set the ID of the company to delete
+    setSelectedId(id); // Set the ID
     setDialogOpen(true); // Show the confirmation dialog
   };
 
@@ -78,17 +77,7 @@ const ListContent = () => {
 
   // Handle click to edit
   const handleEdit = (id) => {
-    setUpdateMode(true);
-    setSelectedId(id);
-    const toUpdate = filterArrayById(lists, id);
-
-    Object.entries(toUpdate).forEach(([key, value]) => {
-      if (key !== 'avatar') {
-        setInitialValuesList(key, value); // Assuming setInitialValuesList can handle these key-value pairs
-      } else {
-        setInitialValuesList('avatar', '');
-      }
-    });
+    getList(id);
   };
 
   return (

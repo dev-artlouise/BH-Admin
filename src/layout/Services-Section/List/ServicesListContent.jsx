@@ -26,10 +26,10 @@ const ServicesListContent = () => {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
 
-  // Hook for managing company data and state
-  const { getLists, deleteList, resetInitialValuesList } = useServiceHook();
+  // Hook for managing data and state
+  const { getLists, getList, deleteList, resetInitialValuesList } = useServiceHook();
 
-  // Query to fetch the list of companies
+  // Query to fetch the list
   const { data: { data: services = [] } = [], isLoading } = useQuery('services', getLists, { refetchOnWindowFocus: false });
 
   // Mutation hook for deletion
@@ -55,7 +55,7 @@ const ServicesListContent = () => {
 
   // Open the confirmation dialog for deletion
   const handleDelete = (serviceId) => {
-    setSelectedServiceId(serviceId); // Set the ID of the company to delete
+    setSelectedServiceId(serviceId); // Set the ID
     setDialogOpen(true); // Show the confirmation dialog
   };
 
@@ -74,10 +74,10 @@ const ServicesListContent = () => {
     setSnackbarOpen(false);
   };
 
-  // Handle click to edit a company
-  // const handleEdit = (id) => {
-  // getList(id);
-  // };
+  // Handle click to edit
+  const handleEdit = (id) => {
+    getList(id);
+  };
 
   return (
     <Fragment>
@@ -95,8 +95,8 @@ const ServicesListContent = () => {
             ))
           ) : services.length > 0 ? (
             services.map(({ id, title, content, logo_url }, key) => (
-              <Grid item xs={12} key={key}>
-                <MUICard title={title} subtitle={content} url={logo_url} onDelete={() => handleDelete(id)} />
+              <Grid item xs={6} key={key}>
+                <MUICard title={title} subtitle={content} url={logo_url} onDelete={() => handleDelete(id)} onEdit={() => handleEdit(id)} />
               </Grid>
             ))
           ) : (
@@ -115,7 +115,7 @@ const ServicesListContent = () => {
       <Dialog open={dialogOpen} onClose={handleCancelDelete}>
         <DialogTitle>Confirm Deletion</DialogTitle>
         <DialogContent>
-          <DialogContentText>Are you sure you want to delete this company?</DialogContentText>
+          <DialogContentText>Are you sure you want to delete this service?</DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCancelDelete} color="primary">

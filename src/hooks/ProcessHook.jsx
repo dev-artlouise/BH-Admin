@@ -4,7 +4,7 @@ import { create } from 'zustand';
 import * as Yup from 'yup';
 
 const PATH = 'flow';
-const SINGULAR_PATH = 'flow';
+const LIST = 'flowList';
 
 const useProcessHook = create((set, get) => ({
   isUpdateMode: false,
@@ -34,7 +34,6 @@ const useProcessHook = create((set, get) => ({
   // SWITCH UPDATE MODE
   setUpdateMode: (value) => set({ isUpdateMode: value }),
 
-  // SERVICE CONTENT
   setInitialValues: (field, value) =>
     set((state) => ({
       initialValues: {
@@ -63,7 +62,7 @@ const useProcessHook = create((set, get) => ({
       }));
       return response.data;
     } catch (error) {
-      throw new Error('Failed to fetch companies: ' + error.message);
+      throw new Error('Failed to fetch data: ' + error.message);
     }
   },
 
@@ -94,40 +93,46 @@ const useProcessHook = create((set, get) => ({
 
   getLists: async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/${PATH}List`);
+      const response = await axios.get(`${API_BASE_URL}/${LIST}`);
 
       return response.data;
     } catch (error) {
-      throw new Error('Failed to fetch companies: ' + error.message);
+      throw new Error('Failed to fetch data: ' + error.message);
     }
   },
 
   getList: async (id) => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/${SINGULAR_PATH}List/${id}`);
-      // set(() => ({
-      //   initialValues: { ...response.data, urlimageold: response.data.urlimage },
-      //   isUpdateMode: true
-      // }));
+      const response = await axios.get(`${API_BASE_URL}/${LIST}/${id}`);
+      const { title, content } = response.data.data;
 
+      set(() => ({
+        initialValuesList: {
+          id: id,
+          title: title,
+          content: content,
+          logo_url: ''
+        },
+        isUpdateMode: true
+      }));
       return response.data;
     } catch (error) {
-      throw new Error('Failed to fetch companies: ' + error.message);
+      throw new Error('Failed to fetch data: ' + error.message);
     }
   },
 
   createList: async (formData) => {
-    const response = await axios.post(`${API_BASE_URL}/${PATH}List`, formData);
+    const response = await axios.post(`${API_BASE_URL}/${LIST}`, formData);
     return response.data;
   },
 
   deleteList: async (id) => {
-    const response = await axios.delete(`${API_BASE_URL}/${PATH}List/${id}`);
+    const response = await axios.delete(`${API_BASE_URL}/${LIST}/${id}`);
     return response.data;
   },
 
   updateList: async (id, formData) => {
-    const response = await axios.post(`${API_BASE_URL}/${PATH}List/${id}?_method=PUT`, formData);
+    const response = await axios.post(`${API_BASE_URL}/${LIST}/${id}?_method=PUT`, formData);
     set(() => ({
       initialValues: { title: '', content: '', logo_url: '' },
       isUpdateMode: false
