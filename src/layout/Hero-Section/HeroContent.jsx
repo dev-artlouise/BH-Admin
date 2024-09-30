@@ -4,10 +4,10 @@ import useHeroHook from 'hooks/HeroHook';
 import { useQuery } from 'react-query';
 
 const HeroContent = () => {
-  // Hook for managing company data and state
+  // Hook for managing data and state
   const { getContent } = useHeroHook();
 
-  // Query to fetch the list of companies
+  // Query to fetch the list
   const {
     data: { data: hero = {} } = {}
     // isLoading

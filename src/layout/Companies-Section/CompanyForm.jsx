@@ -29,6 +29,7 @@ const CompanyForm = () => {
       const formData = new FormData();
       formData.append('name', values.name);
 
+      // Only append the urlimage if values.urlimage is assigned
       if (values.urlimage) formData.append('urlimage', values.urlimage);
 
       // Call createMutation or updateList directly here
@@ -65,12 +66,6 @@ const CompanyForm = () => {
 
   const handleCloseSnackbar = () => setSnackbarOpen(false);
 
-  // const handleCheckbox = (e) => {
-  //   const checked = e.target.checked;
-  //   if (checked) clearFile();
-  //   setRetainImage(checked);
-  // };
-
   const handleCancelEdit = () => {
     handleClearForm();
     setUpdateMode(false);
@@ -101,18 +96,6 @@ const CompanyForm = () => {
         </Grid>
 
         <Grid item xs={12}>
-          {/* {isUpdateMode && (
-            <Stack direction="row" alignItems="center" justifyContent="space-evenly">
-              {initialValues.urlimageold && <img src={initialValues.urlimageold} alt="Original" width={200} height={200} />}
-              {imageDisplay && (
-                <>
-                  <ArrowCircleRightOutlined />
-                  <img src={imageDisplay} alt="Preview" width={200} height={200} />
-                </>
-              )}
-            </Stack>
-          )} */}
-
           <Stack spacing={1}>
             <FormLabel>Upload new image</FormLabel>
             <div
@@ -136,15 +119,6 @@ const CompanyForm = () => {
               {formik.touched.urlimage && formik.errors.urlimage && <div style={{ color: 'red' }}>{formik.errors.urlimage}</div>}
             </FormHelperText>
           </Stack>
-
-          {/* {isUpdateMode && (
-            <FormControlLabel
-              control={<Checkbox checked={retainImage} onChange={handleCheckbox} />}
-              label="Keep the image"
-              labelPlacement="end"
-              sx={{ ml: 1 }}
-            />
-          )} */}
         </Grid>
 
         <Grid item xs={12} gap={2}>

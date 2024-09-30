@@ -34,7 +34,6 @@ const useProjectsHook = create((set, get) => ({
   // SWITCH UPDATE MODE
   setUpdateMode: (value) => set({ isUpdateMode: value }),
 
-  // SERVICE CONTENT
   setInitialValues: (field, value) =>
     set((state) => ({
       initialValues: {
@@ -49,7 +48,6 @@ const useProjectsHook = create((set, get) => ({
     }));
   },
 
-  // CONTENT SECTION
   getContent: async () => {
     try {
       const response = await axios.get(`${API_BASE_URL}/${PATH}`);
@@ -59,7 +57,8 @@ const useProjectsHook = create((set, get) => ({
         initialValues: {
           title: title,
           content: content
-        }
+        },
+        isUpdateMode: true
       }));
       return response.data;
     } catch (error) {
@@ -72,7 +71,6 @@ const useProjectsHook = create((set, get) => ({
     return response.data;
   },
 
-  // LIST SECTION
   setInitialValuesList: (field, value) =>
     set((state) => ({
       initialValuesList: {
@@ -100,14 +98,21 @@ const useProjectsHook = create((set, get) => ({
   getList: async (id) => {
     try {
       const response = await axios.get(`${API_BASE_URL}/${LIST}/${id}`);
-      // set(() => ({
-      //   initialValues: { ...response.data, urlimageold: response.data.urlimage },
-      //   isUpdateMode: true
-      // }));
+      const { title, content } = response.data.data;
+
+      set(() => ({
+        initialValuesList: {
+          id: id,
+          title: title,
+          content: content,
+          image_url: ''
+        },
+        isUpdateMode: true
+      }));
 
       return response.data;
     } catch (error) {
-      throw new Error('Failed to fetch companies: ' + error.message);
+      throw new Error('Failed to fetch data: ' + error.message);
     }
   },
 

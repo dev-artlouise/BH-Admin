@@ -5,7 +5,7 @@ import { Fragment } from 'react';
 import { useQuery } from 'react-query';
 
 const Content = () => {
-  // Hook for managing company data and state
+  // Hook for managing  data and state
   const { getContent } = useOurStoryHook();
 
   // Query to fetch the list

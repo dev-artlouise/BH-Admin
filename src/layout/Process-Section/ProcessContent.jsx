@@ -5,10 +5,10 @@ import { Fragment } from 'react';
 import { useQuery } from 'react-query';
 
 const ProcessContent = () => {
-  // Hook for managing company data and state
+  // Hook for managing data and state
   const { getContent } = useProcessHook();
 
-  // Query to fetch the list of companies
+  // Query to fetch the list
   const { data: { data: process = {} } = [] } = useQuery('process', getContent, { refetchOnWindowFocus: false });
 
   return (

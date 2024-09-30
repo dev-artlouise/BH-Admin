@@ -59,6 +59,19 @@ const useOurTeamHook = create((set, get) => ({
     try {
       const response = await axios.get(`${API_BASE_URL}/${PATH}/${id}`);
 
+      const { fullname, position, message } = response.data.data;
+      set(() => ({
+        initialValues: {
+          id: id,
+          fullname: fullname,
+          position: position,
+          message: message,
+          avatar: ''
+        },
+
+        isUpdateMode: true
+      }));
+
       return response.data;
     } catch (error) {
       throw new Error('Failed to fetch data: ' + error.message);

@@ -4,10 +4,10 @@ import useMissionVisionHook from 'hooks/MissionVisionHook';
 import { useQuery } from 'react-query';
 
 const Content = () => {
-  // Hook for managing company data and state
+  // Hook for managing data and state
   const { getMissionVision } = useMissionVisionHook();
 
-  // Query to fetch the list of companies
+  // Query to fetch the list
   const {
     data: { data: mission_vision } = {}
     // isLoading

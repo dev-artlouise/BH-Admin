@@ -18,7 +18,6 @@ import { useQuery } from 'react-query';
 import TeamCardComponent from 'components/cards/TeamCardComponent';
 import { LoadingButton } from '@mui/lab';
 import useSocMedHook from 'hooks/SocMedHook';
-import { filterArrayById } from 'utils/filterArrayByid';
 
 const Content = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -26,13 +25,13 @@ const Content = () => {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
 
-  // Hook for managing company data and state
-  const { getLists, deleteList, setInitialValues, setUpdateMode } = useSocMedHook();
+  // Hook for managing  data and state
+  const { getLists, getList, deleteList } = useSocMedHook();
 
-  // Query to fetch the list of companies
+  // Query to fetch the list
   const { data: { data: lists = [] } = [], isLoading: isLoadingFetch } = useQuery('socMeds', getLists, { refetchOnWindowFocus: false });
 
-  // Mutation hook for deleting a company
+  // Mutation hook for deleting
   const {
     mutate: deleteMutation,
     isLoading: isLoadingDelete,
@@ -54,7 +53,7 @@ const Content = () => {
 
   // Open the confirmation dialog for deletion
   const handleDelete = (id) => {
-    setSelectedId(id); // Set the ID of the company to delete
+    setSelectedId(id); // Set the ID
     setDialogOpen(true); // Show the confirmation dialog
   };
 
@@ -74,23 +73,11 @@ const Content = () => {
   };
   // Handle click to edit
   const handleEdit = (id) => {
-    setUpdateMode(true);
-    setSelectedId(id);
-    const toUpdate = filterArrayById(lists, id);
-
-    Object.entries(toUpdate).forEach(([key, value]) => {
-      if (key !== 'logo') {
-        setInitialValues(key, value); // Assuming setInitialValues can handle these key-value pairs
-      } else {
-        setInitialValues('logo', '');
-      }
-    });
+    getList(id);
   };
   return (
     <MainCard title="Social Medias" darkTitle contentSX={{ maxHeight: 450, overflowY: 'auto' }}>
       <Grid container>
-        {/* loop the company images here with companies api */}
-
         <Grid container spacing={3}>
           {/* Display skeleton loaders while data is loading */}
           {isLoadingFetch ? (

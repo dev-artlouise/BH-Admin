@@ -12,14 +12,12 @@ import {
   DialogActions,
   Button
 } from '@mui/material';
-
 import MainCard from 'components/MainCard';
 import MUICard from 'components/common/MUICard';
 import useProcessHook from 'hooks/ProcessHook';
 import { Fragment, useState } from 'react';
 import { useQuery } from 'react-query';
 import { useCustomMutation } from 'services/customMutation';
-import { filterArrayById } from 'utils/filterArrayByid';
 
 const ProcessListContent = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -27,13 +25,12 @@ const ProcessListContent = () => {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
 
-  // Hook for managing company data and state
-  const { getLists, deleteList, setUpdateMode, setInitialValuesList } = useProcessHook();
+  // Hook for managing  data and state
+  const { getLists, deleteList, getList } = useProcessHook();
 
-  // Query to fetch the list of companies
+  // Query to fetch the list
   const { data: { data: lists = [] } = [], isLoading: isLoadingFetch } = useQuery('processes', getLists, { refetchOnWindowFocus: false });
 
-  // Mutation hook for deleting a company
   const {
     mutate: deleteMutation,
     isLoading: isLoadingDelete,
@@ -55,7 +52,7 @@ const ProcessListContent = () => {
 
   // Open the confirmation dialog for deletion
   const handleDelete = (id) => {
-    setSelectedId(id); // Set the ID of the company to delete
+    setSelectedId(id); // Set the ID
     setDialogOpen(true); // Show the confirmation dialog
   };
 
@@ -74,19 +71,9 @@ const ProcessListContent = () => {
     setSnackbarOpen(false);
   };
 
-  // Handle click to edit a company
+  // Handle click to edit
   const handleEdit = (id) => {
-    setUpdateMode(true);
-    setSelectedId(id);
-    const toUpdate = filterArrayById(lists, id);
-
-    Object.entries(toUpdate).forEach(([key, value]) => {
-      if (key !== 'logo_url') {
-        setInitialValuesList(key, value); // Assuming setInitialValuesList can handle these key-value pairs
-      } else {
-        setInitialValuesList('logo_url', '');
-      }
-    });
+    getList(id);
   };
 
   return (

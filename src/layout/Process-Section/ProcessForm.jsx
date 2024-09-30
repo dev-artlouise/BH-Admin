@@ -11,7 +11,7 @@ const ProcessForm = () => {
   const [snackbarMessage, setSnackbarMessage] = useState('');
 
   // HOOKS
-  const { createContent, initialValues, setInitialValues, resetInitialValues, validationSchema } = useProcessHook();
+  const { createContent, initialValues, setInitialValues, validationSchema } = useProcessHook();
 
   // FORMIK SETUP
   const formik = useFormik({
@@ -38,7 +38,6 @@ const ProcessForm = () => {
     () => {
       setSnackbarMessage('Service submitted successfully!');
       setSnackbarOpen(true);
-      // handleClearForm();
     },
     (error) => {
       const message =
@@ -54,10 +53,6 @@ const ProcessForm = () => {
   };
 
   const handleCloseSnackbar = () => setSnackbarOpen(false);
-
-  const handleClearForm = () => {
-    resetInitialValues();
-  };
 
   return (
     <form onSubmit={formik.handleSubmit}>
