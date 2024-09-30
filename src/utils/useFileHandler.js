@@ -11,14 +11,20 @@ const useFileHandler = (fileInputRef, initialImage = null, setInitialValues, nam
     if (selectedFile) {
       const reader = new FileReader();
       reader.onloadend = () => {
+        // Update initial values with the selected file
+        if (setInitialValues) {
+          setInitialValues(`${name}_preview`, reader.result);
+          setInitialValues(name, selectedFile);
+        }
         setImageDisplay(reader.result);
         if (onImagePreview) onImagePreview(reader.result); // Optional callback for image preview
       };
-      reader.readAsDataURL(selectedFile);
-    }
 
-    // Update initial values with the selected file
-    if (setInitialValues) setInitialValues(name, selectedFile);
+      reader.readAsDataURL(selectedFile);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = selectedFile; // Clear the file input value
+      }
+    }
 
     if (onFileChange) onFileChange(selectedFile); // Optional callback for file change
   };
@@ -31,7 +37,7 @@ const useFileHandler = (fileInputRef, initialImage = null, setInitialValues, nam
     }
 
     // Reset initial values for the file
-    if (setInitialValues) setInitialValues('urlimage', null);
+    if (setInitialValues) setInitialValues(name, null);
   };
 
   return { imageDisplay, file, handleFileChange, clearFile };

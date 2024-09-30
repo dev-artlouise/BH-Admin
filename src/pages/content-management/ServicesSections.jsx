@@ -1,19 +1,22 @@
-import { Grid } from '@mui/material';
-
-import ServicesForm from 'layout/Services-Section/ServicesForm';
-import ServicesContent from 'layout/Services-Section/ServicesContent';
-
+import MUITabs from 'components/common/MUITabs';
+import { Box } from '@mui/system';
+import ServiceContentSection from 'layout/Services-Section/Content/ServiceContentSection';
+import ServiceListSection from 'layout/Services-Section/List/ServiceListSection';
 const ServicesSections = () => {
+  const tabs = [
+    {
+      label: 'Content',
+      content: <ServiceContentSection />
+    },
+    {
+      label: 'List',
+      content: <ServiceListSection />
+    }
+  ];
   return (
-    <Grid container spacing={6}>
-      <Grid item xs={12} md={5}>
-        <ServicesForm />
-      </Grid>
-
-      <Grid item xs={12} md={7}>
-        <ServicesContent />
-      </Grid>
-    </Grid>
+    <Box>
+      <MUITabs tabs={tabs} />
+    </Box>
   );
 };
 

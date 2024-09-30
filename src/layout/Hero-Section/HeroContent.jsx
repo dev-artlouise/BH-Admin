@@ -5,13 +5,13 @@ import { useQuery } from 'react-query';
 
 const HeroContent = () => {
     // Hook for managing company data and state
-    const { getHeroes } = useHeroHook();
+    const { getContent } = useHeroHook();
 
     // Query to fetch the list of companies
     const {
         data: { data: hero = {} } = {}
         // isLoading
-    } = useQuery('hero', getHeroes, { refetchOnWindowFocus: false });
+    } = useQuery('hero', getContent, { refetchOnWindowFocus: false });
 
     return (
         <MainCard title="Current Hero Section" darkTitle>

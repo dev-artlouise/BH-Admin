@@ -1,41 +1,36 @@
-import { Typography } from "@mui/material"
-import MainCard from "components/MainCard"
+import { Typography } from '@mui/material';
+import MainCard from 'components/MainCard';
+import useWhyUsHook from 'hooks/WhyUsHook';
+import { Fragment } from 'react';
+import { useQuery } from 'react-query';
 
 const Content = () => {
-    return (
-        <MainCard
-            Title='Current Content'
-        >
+  // Hook for managing company data and state
+  const { getContent } = useWhyUsHook();
 
-            <Typography
-                variant='h6'
-                gutterBottom
-            >
-                Current Content
-            </Typography>
+  // Query to fetch the list
+  const { data: { data: whyUs = {} } = [] } = useQuery('whyUs', getContent, { refetchOnWindowFocus: false });
 
-            <Typography
-                variant='h4'
-                gutterBottom
-            >
-                WE CHOOSE US
-            </Typography>
+  return (
+    <Fragment>
+      <MainCard title=" Preview" darkTitle contentSX={{ maxHeight: 450, overflowY: 'auto' }}>
+        {/* Confirmation dialog for deletion */}
+        <Typography variant="h4" gutterBottom>
+          {whyUs.title}
+        </Typography>
+        <Typography variant="body1" gutterBottom>
+          {whyUs.content}
+        </Typography>
+      </MainCard>
 
-            <Typography
-                variant="h2"
-                gutterBottom
-            >
-                High-impact design & development services
-            </Typography>
+      {/* Snackbar notification for success or error messages */}
+      {/* <Snackbar open={snackbarOpen} autoHideDuration={4000} onClose={handleCloseSnackbar}>
+        <Alert onClose={handleCloseSnackbar} severity={isError ? 'error' : 'success'}>
+          {snackbarMessage}
+        </Alert>
+      </Snackbar> */}
+    </Fragment>
+  );
+};
 
-            <Typography
-                variant="body1"
-                gutterBottom
-            >
-                We take you by hand on each step of the process
-            </Typography>
-        </MainCard>
-    )
-}
-
-export default Content
+export default Content;

@@ -14,7 +14,6 @@ import {
 } from '@mui/material';
 import MainCard from 'components/MainCard';
 import { useQuery } from 'react-query';
-import { deleteCompany } from 'services/companiesServices';
 import { useCustomMutation } from 'services/customMutation';
 import { LoadingButton } from '@mui/lab';
 
@@ -28,10 +27,10 @@ const CompanyContent = () => {
   const [snackbarMessage, setSnackbarMessage] = useState('');
 
   // Hook for managing company data and state
-  const { getCompanies, getCompany, resetInitialValues } = useCompanyHook();
+  const { getLists, getList, deleteList, resetInitialValues } = useCompanyHook();
 
   // Query to fetch the list of companies
-  const { data: companies = [], isLoading } = useQuery('companies', getCompanies, { refetchOnWindowFocus: false });
+  const { data: lists = [], isLoading } = useQuery('companies', getLists, { refetchOnWindowFocus: false });
 
   // Mutation hook for deleting a company
   const {
@@ -39,7 +38,7 @@ const CompanyContent = () => {
     isLoading: isLoadingDelete,
     isError
   } = useCustomMutation(
-    deleteCompany, // API request
+    deleteList, // API request
     ['companies'], // Query key to invalidate
     () => {
       setSnackbarMessage('Company deleted successfully!');
@@ -75,9 +74,9 @@ const CompanyContent = () => {
     setSnackbarOpen(false);
   };
 
-  // Handle click to edit a company
+  // Handle click to get the data by ID
   const handleEdit = (id) => {
-    getCompany(id);
+    getList(id);
   };
 
   return (
@@ -86,7 +85,7 @@ const CompanyContent = () => {
         <Grid container spacing={3}>
           {/* Display skeleton loaders while data is loading */}
           {isLoading ? (
-            Array.from({ length: companies?.length || 3 }).map((_, index) => (
+            Array.from({ length: lists?.length || 3 }).map((_, index) => (
               <Grid item xs={4} key={index}>
                 <Skeleton variant="rectangular" height={140} />
                 <MainCard>
@@ -94,8 +93,8 @@ const CompanyContent = () => {
                 </MainCard>
               </Grid>
             ))
-          ) : companies.length > 0 ? (
-            companies.map(({ id, name, urlimage }, key) => (
+          ) : lists.length > 0 ? (
+            lists.map(({ id, name, urlimage }, key) => (
               <Grid item xs={4} key={key}>
                 <MUICard title={name} url={urlimage} onDelete={() => handleDelete(id)} onEdit={() => handleEdit(id)} />
               </Grid>

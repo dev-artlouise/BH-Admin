@@ -17,8 +17,8 @@ const HeroForm = () => {
   const [snackbarMessage, setSnackbarMessage] = useState('');
 
   // HOOKS
-  const { createHero, initialValues, setInitialValues, resetInitialValues, validationSchema } = useHeroHook();
-  const { handleFileChange, clearFile } = useFileHandler(fileInputRef, initialValues.urlimage, setInitialValues, 'image');
+  const { createContent, updateContent, initialValues, setInitialValues, validationSchema, isUpdateMode } = useHeroHook();
+  const { handleFileChange } = useFileHandler(fileInputRef, initialValues.urlimage, setInitialValues, 'image');
 
   // FORMIK SETUP
   const formik = useFormik({
@@ -28,26 +28,25 @@ const HeroForm = () => {
       const formData = new FormData();
       formData.append('title', values.title);
       formData.append('content', values.content);
-      formData.append('image', values.image);
 
-      heroMutation(formData);
+      if (values.image) formData.append('image', values.image);
+
+      createMutation({ id: 1, formData }); // ID 1 is set by default
     },
     validateOnChange: true,
     enableReinitialize: true
   });
 
   const {
-    mutate: heroMutation,
+    mutate: createMutation,
     isLoading,
     isError
   } = useCustomMutation(
-    createHero,
+    ({ id, formData }) => (isUpdateMode ? updateContent(id, formData) : createContent(formData)),
     ['hero'],
     () => {
-      console.log('Hey here');
       setSnackbarMessage('Hero submitted successfully!');
       setSnackbarOpen(true);
-      handleClearForm();
     },
     (error) => {
       console.log('Error occured', error);
@@ -64,11 +63,6 @@ const HeroForm = () => {
   };
 
   const handleCloseSnackbar = () => setSnackbarOpen(false);
-
-  const handleClearForm = () => {
-    clearFile();
-    resetInitialValues();
-  };
 
   return (
     <>
