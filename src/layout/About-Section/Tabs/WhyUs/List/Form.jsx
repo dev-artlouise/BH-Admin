@@ -1,148 +1,152 @@
-import { useState, useRef } from 'react';
-
 import { useFormik } from 'formik';
-import * as Yup from 'yup';
-
-import { Grid, Stack, InputLabel, OutlinedInput, Button } from '@mui/material'
-
+import { Grid, Stack, FormHelperText, FormLabel, Snackbar, Alert } from '@mui/material';
 import MUITextField from 'components/common/MUITextField';
-
-const validationSchema = Yup.object({
-    companyName: Yup.string().required('Company Name is required'),
-});
-
-const styles = {
-    inputWrapper: {
-        position: 'relative',
-        display: 'flex',
-        alignItems: 'center',
-        border: '1px solid #ced4da',
-        borderRadius: '4px',
-        padding: '12px',
-        backgroundColor: '#fff',
-    },
-    fileInput: {
-        position: 'absolute',
-        width: '100%',
-        height: '100%',
-        opacity: 0,
-        cursor: 'pointer',
-    },
-    label: {
-        flex: 1,
-        padding: '6px 12px',
-        cursor: 'pointer',
-        color: '#495057',
-        fontSize: '0.875rem',
-        lineHeight: '1.5',
-    },
-};
+import { CloseOutlined, CloudUploadOutlined } from '@ant-design/icons';
+import { companyStyles } from 'styles/companyStyles';
+import useFileHandler from 'utils/useFileHandler';
+import { useRef, useState } from 'react';
+import { useCustomMutation } from 'services/customMutation';
+import { blueGrey } from '@mui/material/colors';
+import MUIButton from 'components/common/MUIButton';
+import useWhyUsHook from 'hooks/WhyUsHook';
 
 const Form = () => {
+  const fileInputRef = useRef(null);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
 
-    const [file, setFile] = useState(null);
-    const fileInputRef = useRef(null);
+  // HOOKS
+  const { createList, initialValuesList, setUpdateMode, isUpdateMode, setInitialValuesList, resetInitialValuesList, validationSchemaList } =
+    useWhyUsHook();
+  const { handleFileChange, clearFile } = useFileHandler(fileInputRef, initialValuesList.logo_url, setInitialValuesList, 'logo_url');
 
-    const formik = useFormik({
-        initialValues: {
-            companyName: '',
-            companyImage: '',
-        },
+  // FORMIK SETUP
+  const formik = useFormik({
+    initialValues: initialValuesList,
+    validationSchema: validationSchemaList,
+    onSubmit: (values) => {
+      const formData = new FormData();
+      formData.append('title', values?.title);
+      formData.append('content', values?.content);
+      formData.append('logo_url', values?.logo_url);
 
-        validationSchema: validationSchema,
+      createMutation(formData);
+    },
+    validateOnChange: true,
+    enableReinitialize: true
+  });
 
-        onSubmit: (values) => {
-            console.log(values)
-        }
-    })
-
-    // Handle file change
-    const handleFileChange = (event) => {
-        const selectedFile = event.currentTarget.files[0];
-        setFile(selectedFile); // Update the state with the selected file
-        formik.setFieldValue('heroImage', selectedFile); // Set Formik field value for validation
+  const {
+    mutate: createMutation,
+    isLoading,
+    isError
+  } = useCustomMutation(
+    createList,
+    ['whyUsList'],
+    () => {
+      setSnackbarMessage('Record submitted successfully!');
+      setSnackbarOpen(true);
+      handleClearForm();
+    },
+    (error) => {
+      const message =
+        error.status === 404 ? 'Something went wrong. Please contact developer.' : error.response.data.message || 'An error occurred';
+      setSnackbarMessage(message);
+      setSnackbarOpen(true);
     }
+  );
 
-    return (
-        <form onSubmit={formik.handleSubmit}>
-            <Grid
-                container
-                spacing={3}
-                direction='column'
+  const handleChangeInput = (e) => {
+    const { name, value } = e.target;
+    setInitialValuesList(name, value);
+  };
+
+  const handleCloseSnackbar = () => setSnackbarOpen(false);
+
+  const handleCancelEdit = () => {
+    handleClearForm();
+    setUpdateMode(false);
+  };
+
+  const handleClearForm = () => {
+    resetInitialValuesList();
+    clearFile();
+  };
+
+  return (
+    <form onSubmit={formik.handleSubmit}>
+      <Grid container spacing={3} direction="column">
+        <Grid item xs={12}>
+          <Stack spacing={1}>
+            <MUITextField
+              label="Title"
+              name="title"
+              placeholder="Enter Title"
+              value={formik.values.title}
+              onChange={handleChangeInput}
+              onBlur={formik.handleBlur}
+              fullWidth
+              error={formik.touched.title && Boolean(formik.errors.title)}
+              helperText={formik.touched.title && formik.errors.title}
+            />
+          </Stack>
+        </Grid>
+
+        <Grid item xs={12}>
+          <Stack spacing={1}>
+            <MUITextField
+              label="Content"
+              name="content"
+              placeholder="Enter Content"
+              value={formik.values.content}
+              onChange={handleChangeInput}
+              onBlur={formik.handleBlur}
+              fullWidth
+              multiline
+              rows={4}
+              error={formik.touched.content && Boolean(formik.errors.content)}
+              helperText={formik.touched.content && formik.errors.content}
+            />
+          </Stack>
+          <Stack spacing={1} mt={2}>
+            <FormLabel>Logo</FormLabel>
+            <div
+              style={{
+                ...companyStyles.inputWrapper,
+                border: formik.touched.logo_url && formik.errors.logo_url ? '1px solid red' : '1px solid lightgrey'
+              }}
             >
-                <Grid
-                    item
-                    xs={12}
-                >
-                    <Stack spacing={1}>
-                        <MUITextField
-                            label='Title'
-                            name='companyName'
-                            placeholder='Enter Company Name'
-                            value={formik.values.companyName}
-                            onChange={formik.handleChange}
-                            onBlur={formik.handleBlur}
-                            fullWidth
-                            error={formik.touched.companyName && Boolean(formik.errors.companyName)}
-                            helperText={formik.touched.companyName && formik.errors.companyName}
-                        />
-                    </Stack>
-                </Grid>
+              <input
+                type="file"
+                name="logo_url"
+                ref={fileInputRef}
+                onChange={handleFileChange}
+                onBlur={formik.handleBlur}
+                accept="image/*"
+                style={{ width: '100%' }}
+              />
+              <CloudUploadOutlined style={{ fontSize: 20, color: blueGrey[700] }} />
+            </div>
+            <FormHelperText>
+              {formik.touched.logo_url && formik.errors.logo_url && <div style={{ color: 'red' }}>{formik.errors.logo_url}</div>}
+            </FormHelperText>
+          </Stack>
+        </Grid>
 
-                <Grid item xs={12}>
-                    <Stack spacing={1}>
-                        <label htmlFor="">Icon</label>
-                        <div style={styles.inputWrapper}>
-                            <input
-                                type="file"
-                                name="companyImage"
-                                ref={fileInputRef}
-                                onChange={handleFileChange}
-                                onBlur={formik.handleBlur}
-                                accept="image/*"
-                                style={{ width: '100%' }}
-                            />
-                        </div>
-                    </Stack>
-                </Grid>
+        <Grid item xs={12} gap={2}>
+          <MUIButton type="submit" variant="contained" color="primary" label="Submit" isLoading={isLoading} />
+          {isUpdateMode && <MUIButton color="error" label="Cancel" endIcon={<CloseOutlined />} onClick={handleCancelEdit} />}
+        </Grid>
 
-                <Grid item xs={12}>
-                    <Stack spacing={1}>
-                        <MUITextField
-                            label='Content'
-                            name='content'
-                            placeholder='Enter Title'
-                            value={formik.values.content}
-                            onChange={formik.handleChange}
-                            onBlur={formik.handleBlur}
-                            fullWidth
-                            multiline
-                            rows={4}
-                            error={formik.touched.content && Boolean(formik.errors.content)}
-                            helperText={formik.touched.content && formik.errors.content}
-                        />
-                    </Stack>
-                </Grid>
+        {/* Snackbar notification for success or error messages */}
+        <Snackbar open={snackbarOpen} autoHideDuration={4000} onClose={handleCloseSnackbar}>
+          <Alert onClose={handleCloseSnackbar} severity={isError ? 'error' : 'success'}>
+            {snackbarMessage}
+          </Alert>
+        </Snackbar>
+      </Grid>
+    </form>
+  );
+};
 
-
-
-                <Grid item xs={12}>
-                    <Button
-                        disableElevation
-                        // disabled={isSubmitting}
-                        fullWidth
-                        size="large"
-                        type="submit"
-                        variant="contained"
-                        color="primary">
-                        Submit
-                    </Button>
-                </Grid>
-
-
-            </Grid>
-        </form>
-    )
-}
-
-export default Form
+export default Form;

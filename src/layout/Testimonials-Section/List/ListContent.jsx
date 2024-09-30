@@ -14,54 +14,56 @@ import {
 } from '@mui/material';
 
 import MainCard from 'components/MainCard';
-import MUICard from 'components/common/MUICard';
-import useServiceHook from 'hooks/ServiceHook';
+import TestimonialCardComponent from 'components/cards/TestimonialCardComponent';
+import useTestimonialsHook from 'hooks/TestimonialsHook';
 import { Fragment, useState } from 'react';
 import { useQuery } from 'react-query';
 import { useCustomMutation } from 'services/customMutation';
+import { filterArrayById } from 'utils/filterArrayByid';
 
-const ServicesContent = () => {
+const ListContent = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [selectedServiceId, setSelectedServiceId] = useState(null);
+  const [selectedId, setSelectedId] = useState(null);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
 
   // Hook for managing company data and state
-  const { getServices, deleteService } = useServiceHook();
+  const { getLists, deleteList, setInitialValuesList, setUpdateMode } = useTestimonialsHook();
 
   // Query to fetch the list of companies
-  const { data: { data: services = [] } = [], isLoading } = useQuery('services', getServices, { refetchOnWindowFocus: false });
+  const { data: { data: lists = [] } = [], isLoading: isLoadingFetch } = useQuery('testimonials', getLists, {
+    refetchOnWindowFocus: false
+  });
 
   // Mutation hook for deleting a company
   const {
-    mutate: deleteCompanyMutation,
+    mutate: deleteMutation,
     isLoading: isLoadingDelete,
     isError
   } = useCustomMutation(
-    deleteService, // API request
-    ['services'], // Query key to invalidate
+    deleteList, // API request
+    ['testimonials'], // Query key to invalidate
     () => {
-      setSnackbarMessage('Service deleted successfully!');
+      setSnackbarMessage('Record deleted successfully!');
       setSnackbarOpen(true);
-      resetInitialValues(); // Reset form values after successful deletion
       setDialogOpen(false); // Close the confirmation dialog
     },
     () => {
-      setSnackbarMessage('Failed to delete service.');
+      setSnackbarMessage('Failed to delete record.');
       setSnackbarOpen(true);
       setDialogOpen(false); // Close the confirmation dialog on error
     }
   );
 
   // Open the confirmation dialog for deletion
-  const handleDelete = (serviceId) => {
-    setSelectedServiceId(serviceId); // Set the ID of the company to delete
+  const handleDelete = (id) => {
+    setSelectedId(id); // Set the ID of the company to delete
     setDialogOpen(true); // Show the confirmation dialog
   };
 
   // Confirm deletion and trigger the mutation
   const handleConfirmDelete = () => {
-    deleteCompanyMutation(selectedServiceId); // Execute delete mutation
+    deleteMutation(selectedId); // Execute delete mutation
   };
 
   // Cancel deletion and close the dialog
@@ -74,18 +76,28 @@ const ServicesContent = () => {
     setSnackbarOpen(false);
   };
 
-  // Handle click to edit a company
+  // Handle click to edit
   const handleEdit = (id) => {
-    getCompany(id);
+    setUpdateMode(true);
+    setSelectedId(id);
+    const toUpdate = filterArrayById(lists, id);
+
+    Object.entries(toUpdate).forEach(([key, value]) => {
+      if (key !== 'avatar') {
+        setInitialValuesList(key, value); // Assuming setInitialValuesList can handle these key-value pairs
+      } else {
+        setInitialValuesList('avatar', '');
+      }
+    });
   };
 
   return (
     <Fragment>
-      <MainCard title="Services Section" darkTitle contentSX={{ maxHeight: 450, overflowY: 'auto' }}>
+      <MainCard title="List Section" darkTitle contentSX={{ maxHeight: 450, overflowY: 'auto' }}>
         <Grid container spacing={3}>
           {/* Display skeleton loaders while data is loading */}
-          {isLoading ? (
-            Array.from({ length: services?.length || 3 }).map((_, index) => (
+          {isLoadingFetch ? (
+            Array.from({ length: lists?.length || 3 }).map((_, index) => (
               <Grid item xs={4} key={index}>
                 <Skeleton variant="rectangular" height={140} />
                 <MainCard>
@@ -93,10 +105,17 @@ const ServicesContent = () => {
                 </MainCard>
               </Grid>
             ))
-          ) : services.length > 0 ? (
-            services.map(({ id, title, content, logo_url }, key) => (
-              <Grid item xs={4} key={key}>
-                <MUICard title={title} subtitle={content} url={logo_url} onDelete={() => handleDelete(id)} onEdit={() => handleEdit(id)} />
+          ) : lists.length > 0 ? (
+            lists.map(({ id, fullname, position, comment, avatar }, key) => (
+              <Grid item sm={6} md={6} lg={6} xl={6} key={key}>
+                <TestimonialCardComponent
+                  name={fullname}
+                  position={position}
+                  message={comment}
+                  avatar={avatar}
+                  onDelete={() => handleDelete(id)}
+                  onEdit={() => handleEdit(id)}
+                />
               </Grid>
             ))
           ) : (
@@ -115,7 +134,7 @@ const ServicesContent = () => {
       <Dialog open={dialogOpen} onClose={handleCancelDelete}>
         <DialogTitle>Confirm Deletion</DialogTitle>
         <DialogContent>
-          <DialogContentText>Are you sure you want to delete this company?</DialogContentText>
+          <DialogContentText>Are you sure you want to delete this record?</DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCancelDelete} color="primary">
@@ -137,4 +156,4 @@ const ServicesContent = () => {
   );
 };
 
-export default ServicesContent;
+export default ListContent;

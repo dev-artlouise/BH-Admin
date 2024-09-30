@@ -3,7 +3,7 @@ import { API_BASE_URL } from 'services/API';
 import { create } from 'zustand';
 import * as Yup from 'yup';
 
-const PATH = 'missionvision';
+const PATH = 'missionvission';
 
 const useMissionVisionHook = create((set) => ({
   initialValues: { mission: '', vision: '' },

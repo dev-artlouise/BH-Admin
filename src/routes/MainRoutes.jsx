@@ -3,6 +3,8 @@ import { lazy } from 'react';
 // project import
 import Loadable from 'components/Loadable';
 import Dashboard from 'layout/Dashboard';
+import ProjectSection from 'pages/content-management/ProjectSection';
+import TestimonialsSection from 'pages/content-management/TestimonialsSection';
 
 const Color = Loadable(lazy(() => import('pages/component-overview/color')));
 const Typography = Loadable(lazy(() => import('pages/component-overview/typography')));
@@ -56,12 +58,18 @@ const MainRoutes = {
       path: 'process-section',
       element: <Process />
     },
-
+    {
+      path: 'project-section',
+      element: <ProjectSection />
+    },
+    {
+      path: 'testimonials-section',
+      element: <TestimonialsSection />
+    },
     {
       path: 'about-us',
       element: <AboutUs />
-    },
-
+    }
   ]
 };
 
