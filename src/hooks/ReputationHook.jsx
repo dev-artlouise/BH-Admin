@@ -43,7 +43,7 @@ const useReputationHook = create((set) => ({
 
       return response.data;
     } catch (error) {
-      throw new Error('Failed to fetch reputation: ' + error.message);
+      throw new Error('Failed to fetch data: ' + error.message);
     }
   },
 

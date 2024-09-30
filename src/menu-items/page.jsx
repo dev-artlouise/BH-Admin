@@ -1,5 +1,5 @@
 // assets
-import { LoginOutlined, ProfileOutlined, GroupOutlined, ToolOutlined } from '@ant-design/icons';
+import { LoginOutlined, ProfileOutlined, GroupOutlined, ToolOutlined, ProjectOutlined, HeartOutlined } from '@ant-design/icons';
 import { ApartmentOutlined, AccountTreeOutlined, PeopleOutline } from '@mui/icons-material';
 
 // icons
@@ -11,6 +11,8 @@ const icons = {
   ToolOutlined,
   AccountTreeOutlined,
   PeopleOutline,
+  ProjectOutlined,
+  HeartOutlined
 };
 
 // ==============================|| MENU ITEMS - EXTRA PAGES ||============================== //
@@ -47,7 +49,7 @@ const pages = {
       title: 'Hero Section',
       type: 'item',
       url: '/hero-section',
-      icon: icons.GroupOutlined,
+      icon: icons.GroupOutlined
       // target: true
     },
     {
@@ -55,7 +57,7 @@ const pages = {
       title: 'Companies Section',
       type: 'item',
       url: '/companies-section',
-      icon: icons.ApartmentOutlined,
+      icon: icons.ApartmentOutlined
       // target: true
     },
     {
@@ -63,7 +65,7 @@ const pages = {
       title: 'Services Section',
       type: 'item',
       url: '/services-section',
-      icon: icons.ToolOutlined,
+      icon: icons.ToolOutlined
       // target: true
     },
 
@@ -72,7 +74,25 @@ const pages = {
       title: 'Process Section',
       type: 'item',
       url: '/process-section',
-      icon: icons.AccountTreeOutlined,
+      icon: icons.AccountTreeOutlined
+      // target: true
+    },
+
+    {
+      id: 'projects',
+      title: 'Projects Section',
+      type: 'item',
+      url: '/project-section',
+      icon: icons.ProjectOutlined
+      // target: true
+    },
+
+    {
+      id: 'testimonials',
+      title: 'Testimonials Section',
+      type: 'item',
+      url: '/testimonials-section',
+      icon: icons.HeartOutlined
       // target: true
     },
 
@@ -81,10 +101,9 @@ const pages = {
       title: 'About Us',
       type: 'item',
       url: '/about-us',
-      icon: icons.PeopleOutline,
+      icon: icons.PeopleOutline
       // target: true
     }
-
   ]
 };
 

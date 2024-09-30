@@ -1,12 +1,12 @@
 import React, { forwardRef } from 'react';
-import { OutlinedInput, InputLabel, FormHelperText } from '@mui/material';
+import { OutlinedInput, InputLabel, FormHelperText, Stack } from '@mui/material';
 
 const MUITextField = forwardRef(
   ({ label, name, type, value, onBlur, onChange, placeholder, multiline, fullWidth, rows, helperText, error, inputProps }, ref) => {
     //console.log('Ref in MUITextField:', ref); // Check ref assignment
 
     return (
-      <>
+      <Stack>
         <InputLabel htmlFor={name}>{label}</InputLabel>
         <OutlinedInput
           name={name}
@@ -23,7 +23,7 @@ const MUITextField = forwardRef(
           ref={ref} // Forward the ref to OutlinedInput
         />
         {helperText && <FormHelperText error={error}>{helperText}</FormHelperText>}
-      </>
+      </Stack>
     );
   }
 );

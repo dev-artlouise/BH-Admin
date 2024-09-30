@@ -1,11 +1,11 @@
 import { useRef, useState } from 'react';
 import { useFormik } from 'formik';
-import { Grid, Stack, Snackbar, Alert, FormHelperText, FormControlLabel, Checkbox } from '@mui/material';
+import { Grid, Stack, Snackbar, Alert, FormHelperText, FormLabel } from '@mui/material';
 import MUITextField from 'components/common/MUITextField';
 import MUIButton from 'components/common/MUIButton';
 import { useCustomMutation } from 'services/customMutation';
 import { companyStyles } from 'styles/companyStyles';
-import { ArrowCircleRightOutlined, CloudUploadOutlined } from '@mui/icons-material';
+import { CloudUploadOutlined } from '@mui/icons-material';
 import { blueGrey } from '@mui/material/colors';
 import useCompanyHook from 'hooks/CompanyHook';
 import useFileHandler from 'utils/useFileHandler';
@@ -15,20 +15,11 @@ const CompanyForm = () => {
   const fileInputRef = useRef(null);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
-  const [retainImage, setRetainImage] = useState(false);
 
   // HOOKS
-  const {
-    createCompany,
-    updateCompany,
-    initialValues,
-    setUpdateMode,
-    isUpdateMode,
-    setInitialValues,
-    resetInitialValues,
-    validationSchema
-  } = useCompanyHook();
-  const { imageDisplay, handleFileChange, clearFile } = useFileHandler(fileInputRef, initialValues.urlimage, setInitialValues, 'urlimage');
+  const { createList, updateList, initialValues, setUpdateMode, isUpdateMode, setInitialValues, resetInitialValues, validationSchema } =
+    useCompanyHook();
+  const { handleFileChange, clearFile } = useFileHandler(fileInputRef, initialValues.urlimage, setInitialValues, 'urlimage');
 
   // FORMIK SETUP
   const formik = useFormik({
@@ -37,20 +28,22 @@ const CompanyForm = () => {
     onSubmit: (values) => {
       const formData = new FormData();
       formData.append('name', values.name);
-      formData.append('urlimage', values.urlimage);
 
-      companyMutation(formData);
+      if (values.urlimage) formData.append('urlimage', values.urlimage);
+
+      // Call createMutation or updateList directly here
+      createMutation({ id: isUpdateMode ? initialValues.id : undefined, formData });
     },
     validateOnChange: true,
     enableReinitialize: true
   });
 
   const {
-    mutate: companyMutation,
+    mutate: createMutation,
     isLoading,
     isError
   } = useCustomMutation(
-    isUpdateMode ? updateCompany : createCompany,
+    ({ id, formData }) => (isUpdateMode ? updateList(id, formData) : createList(formData)),
     ['companies'],
     () => {
       setSnackbarMessage('Company submitted successfully!');
@@ -72,11 +65,11 @@ const CompanyForm = () => {
 
   const handleCloseSnackbar = () => setSnackbarOpen(false);
 
-  const handleCheckbox = (e) => {
-    const checked = e.target.checked;
-    if (checked) clearFile();
-    setRetainImage(checked);
-  };
+  // const handleCheckbox = (e) => {
+  //   const checked = e.target.checked;
+  //   if (checked) clearFile();
+  //   setRetainImage(checked);
+  // };
 
   const handleCancelEdit = () => {
     handleClearForm();
@@ -108,7 +101,7 @@ const CompanyForm = () => {
         </Grid>
 
         <Grid item xs={12}>
-          {isUpdateMode && (
+          {/* {isUpdateMode && (
             <Stack direction="row" alignItems="center" justifyContent="space-evenly">
               {initialValues.urlimageold && <img src={initialValues.urlimageold} alt="Original" width={200} height={200} />}
               {imageDisplay && (
@@ -118,9 +111,10 @@ const CompanyForm = () => {
                 </>
               )}
             </Stack>
-          )}
+          )} */}
 
           <Stack spacing={1}>
+            <FormLabel>Upload new image</FormLabel>
             <div
               style={{
                 ...companyStyles.inputWrapper,
@@ -134,7 +128,6 @@ const CompanyForm = () => {
                 onChange={(e) => handleFileChange(e)}
                 onBlur={formik.handleBlur}
                 accept="image/*"
-                disabled={retainImage}
                 style={{ width: '100%' }}
               />
               <CloudUploadOutlined style={{ fontSize: 20, color: blueGrey[700] }} />
@@ -144,14 +137,14 @@ const CompanyForm = () => {
             </FormHelperText>
           </Stack>
 
-          {isUpdateMode && (
+          {/* {isUpdateMode && (
             <FormControlLabel
               control={<Checkbox checked={retainImage} onChange={handleCheckbox} />}
               label="Keep the image"
               labelPlacement="end"
               sx={{ ml: 1 }}
             />
-          )}
+          )} */}
         </Grid>
 
         <Grid item xs={12} gap={2}>

@@ -1,94 +1,114 @@
-import { useState, useRef } from 'react';
-
 import { useFormik } from 'formik';
-import * as Yup from 'yup';
-
-import { Grid, Stack, InputLabel, OutlinedInput, Button } from '@mui/material'
-
+import { Grid, Stack, Snackbar, Alert } from '@mui/material';
 import MUITextField from 'components/common/MUITextField';
-
-const validationSchema = Yup.object({
-    processTitle: Yup.string().required('Title is required'),
-});
+import { useState } from 'react';
+import { useCustomMutation } from 'services/customMutation';
+import MUIButton from 'components/common/MUIButton';
+import useProcessHook from 'hooks/ProcessHook';
 
 const ProcessForm = () => {
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
 
-    const formik = useFormik({
-        initialValues: {
-            processTitle: '',
-            processContent: '',
-        },
+  // HOOKS
+  const { createContent, initialValues, setInitialValues, resetInitialValues, validationSchema } = useProcessHook();
 
-        validationSchema: validationSchema,
+  // FORMIK SETUP
+  const formik = useFormik({
+    initialValues,
+    validationSchema,
+    onSubmit: (values) => {
+      const formData = new FormData();
+      formData.append('title', values.title);
+      formData.append('content', values.content);
 
-        onSubmit: (values) => {
-            console.log(values)
-        }
-    })
+      mutation(formData);
+    },
+    validateOnChange: true,
+    enableReinitialize: true
+  });
 
-    return (
-        <form onSubmit={formik.handleSubmit}>
-            <Grid
-                container
-                spacing={3}
-                direction='column'
-            >
-                <Grid
-                    item
-                    xs={12}
-                >
-                    <Stack spacing={1}>
+  const {
+    mutate: mutation,
+    isLoading: isLoadingSubmit,
+    isError
+  } = useCustomMutation(
+    createContent,
+    ['process'],
+    () => {
+      setSnackbarMessage('Service submitted successfully!');
+      setSnackbarOpen(true);
+      // handleClearForm();
+    },
+    (error) => {
+      const message =
+        error.status === 404 ? 'Something went wrong. Please contact developer.' : error.response.data.message || 'An error occurred';
+      setSnackbarMessage(message);
+      setSnackbarOpen(true);
+    }
+  );
 
-                        <MUITextField
-                            label='Process Title'
-                            name='processTitle'
-                            placeholder='Enter Title'
-                            value={formik.values.processTitle}
-                            onChange={formik.handleChange}
-                            onBlur={formik.handleBlur}
-                            fullWidth
-                            error={formik.touched.processTitle && Boolean(formik.errors.processTitle)}
-                            helperText={formik.touched.processTitle && formik.errors.processTitle}
-                        />
-                    </Stack>
-                </Grid>
+  const handleChangeInput = (e) => {
+    const { name, value } = e.target;
+    setInitialValues(name, value);
+  };
 
-                <Grid item xs={12}>
-                    <Stack spacing={1}>
+  const handleCloseSnackbar = () => setSnackbarOpen(false);
 
-                        <MUITextField
-                            label='Content'
-                            name='processContent'
-                            placeholder='Enter Content'
-                            value={formik.values.processContent}
-                            onChange={formik.handleChange}
-                            onBlur={formik.handleBlur}
-                            fullWidth
-                            multiline
-                            rows={4}
-                            error={formik.touched.processContent && Boolean(formik.errors.processContent)}
-                            helperText={formik.touched.processContent && formik.errors.processContent}
-                        />
-                    </Stack>
-                </Grid>
+  const handleClearForm = () => {
+    resetInitialValues();
+  };
 
-                <Grid item xs={12}>
-                    <Button
-                        disableElevation
-                        // disabled={isSubmitting}
-                        fullWidth
-                        size="large"
-                        type="submit"
-                        variant="contained"
-                        color="primary">
-                        Submit
-                    </Button>
-                </Grid>
+  return (
+    <form onSubmit={formik.handleSubmit}>
+      <Grid container spacing={3} direction="column">
+        <Grid item xs={12}>
+          <Stack spacing={1}>
+            <MUITextField
+              label="Title"
+              name="title"
+              placeholder="Enter Title"
+              value={formik.values.title}
+              onChange={handleChangeInput}
+              onBlur={formik.handleBlur}
+              fullWidth
+              error={formik.touched.title && Boolean(formik.errors.title)}
+              helperText={formik.touched.title && formik.errors.title}
+            />
+          </Stack>
+        </Grid>
 
+        <Grid item xs={12}>
+          <Stack spacing={1}>
+            <MUITextField
+              label="Content"
+              name="content"
+              placeholder="Enter Content"
+              value={formik.values.content}
+              onChange={handleChangeInput}
+              onBlur={formik.handleBlur}
+              fullWidth
+              multiline
+              rows={4}
+              error={formik.touched.content && Boolean(formik.errors.content)}
+              helperText={formik.touched.content && formik.errors.content}
+            />
+          </Stack>
+        </Grid>
 
-            </Grid>
-        </form>
-    )
-}
+        <Grid item xs={12} gap={2}>
+          <MUIButton type="submit" variant="contained" color="primary" label="Submit" isLoading={isLoadingSubmit} />
+        </Grid>
 
-export default ProcessForm
+        {/* Snackbar notification for success or error messages */}
+        <Snackbar open={snackbarOpen} autoHideDuration={4000} onClose={handleCloseSnackbar}>
+          <Alert onClose={handleCloseSnackbar} severity={isError ? 'error' : 'success'}>
+            {snackbarMessage}
+          </Alert>
+        </Snackbar>
+      </Grid>
+    </form>
+  );
+};
+
+export default ProcessForm;

@@ -1,45 +1,36 @@
-import { Typography, InputLabel } from '@mui/material'
-import MainCard from 'components/MainCard'
+import { Typography } from '@mui/material';
+import MainCard from 'components/MainCard';
+import useOurStoryHook from 'hooks/OutStoryHook';
+import { Fragment } from 'react';
+import { useQuery } from 'react-query';
 
 const Content = () => {
-    return (
-        <MainCard
-            Title='Current Section'
-        >
+  // Hook for managing company data and state
+  const { getContent } = useOurStoryHook();
 
-            <Typography
-                variant='h6'
-                gutterBottom
-            >
-                Current Content
-            </Typography>
+  // Query to fetch the list
+  const { data: { data: ourStory = {} } = [] } = useQuery('ourStory', getContent, { refetchOnWindowFocus: false });
 
-            <Typography
-                variant='h4'
-                gutterBottom
-            >
-                OUT STORY
-            </Typography>
+  return (
+    <Fragment>
+      <MainCard title="Our Story Preview" darkTitle contentSX={{ maxHeight: 450, overflowY: 'auto' }}>
+        {/* Confirmation dialog for deletion */}
+        <Typography variant="h4" gutterBottom>
+          {ourStory.title}
+        </Typography>
+        <Typography variant="body1" gutterBottom>
+          {ourStory.content}
+        </Typography>
+      </MainCard>
 
-            <Typography
-                variant="h2"
-                gutterBottom
-            >
-                Lorem ipsum dolor sit amen, consenter nipissing eli, sed do elusion tempos incident ut laborers et doolie magna alissa.
-            </Typography>
+      {/* Snackbar notification for success or error messages */}
+      {/* <Snackbar open={snackbarOpen} autoHideDuration={4000} onClose={handleCloseSnackbar}>
+        <Alert onClose={handleCloseSnackbar} severity={isError ? 'error' : 'success'}>
+          {snackbarMessage}
+        </Alert>
+      </Snackbar> */}
+    </Fragment>
+  );
+};
 
-            <Typography
-                variant="body1"
-                gutterBottom
-            >
-                Lorem ipsum dolor sit amen, consenter nipissing eli, sed do elusion tempos incident ut laborers et doolie magna alissa. Ut enif ad
-                minim venice, quin nostrum exercitation illampu laborings nisi ut liquid ex ea commons construal. Duos aube grue dolor in
-                reprehended in voltage veil esse colum doolie eu fujian bulla parian. Exceptive sin ocean cuspidate non president, sunk in culpa qui
-                officiate descent molls anim id est labours.
-            </Typography>
-
-        </MainCard>
-    )
-}
-
-export default Content
+export default Content;
