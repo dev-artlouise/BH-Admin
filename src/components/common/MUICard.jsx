@@ -8,7 +8,7 @@ const MUICard = ({ title, url, subtitle, onEdit, onDelete, width, height, label 
   return (
     <Card sx={{ width: width, height: height, display: 'flex', flexDirection: 'column' }}>
       <CardMedia component="img" height="140px" image={url} alt={title} />
-      <CardContent sx={{ flexGrow: 1, minHeight: '200px', maxHeight: '200px', overflowY: 'auto' }}>
+      <CardContent sx={{ flexGrow: 1, minHeight: '100px', maxHeight: '200px', overflowY: 'auto' }}>
         <small style={{ fontSize: 10, color: grey[500] }}>{label}</small>
         <Typography gutterBottom variant="h5" mb={1} p={0}>
           {title}

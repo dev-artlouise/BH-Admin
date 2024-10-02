@@ -26,6 +26,7 @@ const Form = () => {
     resetInitialValuesList,
     validationSchemaList
   } = useWhyUsHook();
+
   const { handleFileChange, clearFile } = useFileHandler(fileInputRef, initialValuesList.logo_url, setInitialValuesList, 'logo_url');
 
   // FORMIK SETUP
