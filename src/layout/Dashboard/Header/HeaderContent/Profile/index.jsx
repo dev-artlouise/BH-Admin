@@ -1,6 +1,8 @@
 import PropTypes from 'prop-types';
 import { useRef, useState } from 'react';
 
+import { useNavigate } from 'react-router-dom';
+
 // material-ui
 import { useTheme } from '@mui/material/styles';
 import ButtonBase from '@mui/material/ButtonBase';
@@ -72,6 +74,22 @@ export default function Profile() {
 
   const iconBackColorOpen = 'grey.100';
 
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+
+    console.log('hello world')
+    // Clear user data (if stored in Zustand)
+    // resetUser();
+
+    // Optionally, remove token from local storage/session storage
+    // localStorage.removeItem('authToken');
+
+    // Redirect to the login page
+    navigate('/login');
+  };
+
+
   return (
     <Box sx={{ flexShrink: 0, ml: 0.75 }}>
       <ButtonBase
@@ -133,7 +151,7 @@ export default function Profile() {
                       </Grid>
                       <Grid item>
                         <Tooltip title="Logout">
-                          <IconButton size="large" sx={{ color: 'text.primary' }}>
+                          <IconButton size="large" sx={{ color: 'text.primary' }} onClick={handleLogout}>
                             <LogoutOutlined />
                           </IconButton>
                         </Tooltip>
