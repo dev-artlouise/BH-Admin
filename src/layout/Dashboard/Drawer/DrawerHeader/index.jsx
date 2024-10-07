@@ -14,7 +14,8 @@ export default function DrawerHeader({ open }) {
 
   return (
     <DrawerHeaderStyled theme={theme} open={!!open}>
-      <Logo isIcon={!open} sx={{ width: open ? 'auto' : 35, height: 35 }} />
+      Broadheader
+      {/* <Logo isIcon={!open} sx={{ width: open ? 'auto' : 35, height: 35 }} /> */}
     </DrawerHeaderStyled>
   );
 }

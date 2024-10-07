@@ -19,8 +19,8 @@ const ServicesForm = () => {
     validationSchema,
     onSubmit: (values) => {
       const formData = new FormData();
-      formData.append('title', values.serviceTitle);
-      formData.append('content', values.serviceContent);
+      formData.append('title', values.title);
+      formData.append('content', values.content);
 
       serviceMutation(formData);
     },
@@ -61,14 +61,14 @@ const ServicesForm = () => {
           <Stack spacing={1}>
             <MUITextField
               label="Title"
-              name="serviceTitle"
+              name="title"
               placeholder="Enter Title"
-              value={formik.values.serviceTitle}
+              value={formik.values.title}
               onChange={handleChangeInput}
               onBlur={formik.handleBlur}
               fullWidth
-              error={formik.touched.serviceTitle && Boolean(formik.errors.serviceTitle)}
-              helperText={formik.touched.serviceTitle && formik.errors.serviceTitle}
+              error={formik.touched.title && Boolean(formik.errors.title)}
+              helperText={formik.touched.title && formik.errors.title}
             />
           </Stack>
         </Grid>
@@ -77,16 +77,16 @@ const ServicesForm = () => {
           <Stack spacing={1}>
             <MUITextField
               label="Content"
-              name="serviceContent"
+              name="content"
               placeholder="Enter Content"
-              value={formik.values.serviceContent}
+              value={formik.values.content}
               onChange={handleChangeInput}
               onBlur={formik.handleBlur}
               fullWidth
               multiline
               rows={4}
-              error={formik.touched.serviceContent && Boolean(formik.errors.serviceContent)}
-              helperText={formik.touched.serviceContent && formik.errors.serviceContent}
+              error={formik.touched.content && Boolean(formik.errors.content)}
+              helperText={formik.touched.content && formik.errors.content}
             />
           </Stack>
         </Grid>

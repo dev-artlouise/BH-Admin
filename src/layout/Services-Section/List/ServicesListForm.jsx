@@ -29,21 +29,23 @@ const ServicesListForm = () => {
   const { handleFileChange, clearFile } = useFileHandler(fileInputRef, initialValuesList.logo_url, setInitialValuesList, 'logo_url');
 
   // FORMIK SETUP
-  const formik = useFormik({
-    initialValues: initialValuesList,
-    validationSchema: validationSchemaList,
-    onSubmit: (values) => {
-      const formData = new FormData();
-      formData.append('title', values?.title);
-      formData.append('content', values?.content);
-      if (values?.logo_url) formData.append('logo_url', values?.logo_url);
+  const formik = useFormik(
+    {
+      initialValues: initialValuesList,
+      validationSchema: validationSchemaList,
+      onSubmit: (values) => {
+        console.log('Submitting form with values:', values)
+        const formData = new FormData();
+        formData.append('title', values?.title);
+        formData.append('content', values?.content);
+        // if (values?.logo_url) formData.append('logo_url', values?.logo_url);
 
-      // Call createMutation or updateList directly here
-      createMutation({ id: isUpdateMode ? initialValuesList.id : undefined, formData });
-    },
-    validateOnChange: true,
-    enableReinitialize: true
-  });
+        // Call createMutation or updateList directly here
+        createMutation({ id: isUpdateMode ? initialValuesList.id : undefined, formData });
+      },
+      validateOnChange: true,
+      enableReinitialize: true
+    });
 
   const {
     mutate: createMutation,
@@ -93,7 +95,7 @@ const ServicesListForm = () => {
               label="Title"
               name="title"
               placeholder="Enter Title"
-              value={formik.values?.title}
+              value={formik.values.title}
               onChange={handleChangeInput}
               onBlur={formik.handleBlur}
               fullWidth
@@ -109,7 +111,7 @@ const ServicesListForm = () => {
               label="Content"
               name="content"
               placeholder="Enter Content"
-              value={formik.values?.content}
+              value={formik.values.content}
               onChange={handleChangeInput}
               onBlur={formik.handleBlur}
               fullWidth
